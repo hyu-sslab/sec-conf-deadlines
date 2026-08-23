@@ -560,18 +560,71 @@ import { href } from '../lib/urls.ts';
         setInterval(tick, 1000);
       }
 
-      /* ---------- 월 네비게이터 점프 ---------- */
-      // 앵커 기본 동작은 스크롤 컨테이너를 찾아 움직이지만, 활성 표시는
-      // 우리가 옮겨야 한다.
-      for (const cell of document.querySelectorAll<HTMLElement>('.cell[data-month][href]')) {
-        cell.addEventListener('click', () => {
-          for (const other of document.querySelectorAll('.cell[data-month]')) {
-            other.removeAttribute('data-active');
-            other.removeAttribute('aria-current');
+      /* ---------- 월 네비게이터 ---------- */
+      const strip = document.querySelector<HTMLElement>('.nav');
+      const monthCells = [...document.querySelectorAll<HTMLElement>('.cell[data-month]')];
+
+      const markMonth = (key: string, follow: boolean) => {
+        let active: HTMLElement | undefined;
+        for (const cell of monthCells) {
+          const on = cell.dataset.month === key;
+          cell.toggleAttribute('data-active', on);
+          if (on) {
+            cell.setAttribute('aria-current', 'true');
+            active = cell;
+          } else {
+            cell.removeAttribute('aria-current');
           }
-          cell.setAttribute('data-active', '');
-          cell.setAttribute('aria-current', 'true');
-        });
+        }
+        // 활성 칸이 가로 스크롤 밖에 있으면 끌어온다.
+        if (follow && active && strip) {
+          const box = strip.getBoundingClientRect();
+          const cell = active.getBoundingClientRect();
+          if (cell.left < box.left + 8 || cell.right > box.right - 8) {
+            strip.scrollTo({
+              left: active.offsetLeft - box.width / 2 + cell.width / 2,
+              behavior: 'smooth',
+            });
+          }
+        }
+      };
+
+      for (const cell of monthCells) {
+        if (!cell.hasAttribute('href')) continue;
+        cell.addEventListener('click', () => markMonth(cell.dataset.month!, false));
+      }
+
+      /*
+       * 스크롤을 따라 활성 월을 옮긴다.
+       *
+       * IntersectionObserver 대신 위치를 직접 잰다 — 월 헤더가 sticky라
+       * 관찰자의 교차 판정이 실제로 보이는 달과 어긋난다. 스크롤러 상단을
+       * 지난 마지막 섹션이 곧 지금 보고 있는 달이다.
+       */
+      const listScroller = document.querySelector<HTMLElement>('[data-list][data-scroll]');
+      if (listScroller && monthCells.length > 0) {
+        let queued = false;
+        const sync = () => {
+          queued = false;
+          const top = listScroller.getBoundingClientRect().top + 4;
+          let key = '';
+          for (const section of listScroller.querySelectorAll<HTMLElement>('[data-section]')) {
+            if (section.hidden) continue;
+            if (section.getBoundingClientRect().top <= top) key = section.dataset.section!;
+            else break;
+          }
+          if (key) markMonth(key, true);
+        };
+        listScroller.addEventListener(
+          'scroll',
+          () => {
+            if (queued) return;
+            queued = true;
+            requestAnimationFrame(sync);
+          },
+          { passive: true },
+        );
+        sync();
       }
 
       /* ---------- 연간 달력 페이저 ---------- */

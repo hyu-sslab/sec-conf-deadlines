@@ -92,7 +92,6 @@ const topics = topicEntries
   .sort((a, b) => a.data.order - b.data.order)
   .map((entry) => ({ id: entry.id, label: entry.data.label, short: entry.data.short }));
 
-const untracked = all.filter((item) => item.fullPaper === null).length;
 ---
 
 <Base>
@@ -136,13 +135,6 @@ const untracked = all.filter((item) => item.fullPaper === null).length;
       )
     }
 
-    {
-      untracked > 0 && (
-        <p class="note">
-          일정을 아직 수집하지 못한 학회가 {untracked}곳 있습니다.
-        </p>
-      )
-    }
   </main>
 
   <DetailSheet />
