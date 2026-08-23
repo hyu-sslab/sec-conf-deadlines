@@ -1,0 +1,51 @@
+name: 날짜 정정 · 마감 연장 제보
+description: 화면의 일정이 원문과 다르다
+title: "[정정] "
+labels: ["정정", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        마감 연장은 마감 당일이나 직후에 공지되는 경우가 많아 자동 감시가 놓칠 수 있습니다.
+        보이는 대로 알려 주시면 됩니다.
+
+  - type: input
+    id: conference
+    attributes:
+      label: 학회와 연도
+      placeholder: NDSS 2027 (2차 라운드)
+    validations:
+      required: true
+
+  - type: input
+    id: shown
+    attributes:
+      label: 화면에 나오는 값
+      placeholder: 본문 마감 2026-08-19
+    validations:
+      required: true
+
+  - type: input
+    id: actual
+    attributes:
+      label: 원문의 값
+      placeholder: 본문 마감 2026-09-02 (연장)
+    validations:
+      required: true
+
+  - type: input
+    id: source
+    attributes:
+      label: 원문 주소
+      description: 그 날짜가 적혀 있는 페이지 주소를 적어 주세요.
+      placeholder: https://www.ndss-symposium.org/ndss2027/submissions/call-for-papers/
+    validations:
+      required: true
+
+  - type: textarea
+    id: quote
+    attributes:
+      label: 근거 문장
+      description: 원문의 해당 줄을 그대로 붙여 넣어 주세요. 번역하지 않으셔도 됩니다.
+      placeholder: "Fall Cycle Paper submission deadline: September 2, 2026, 11:59 PM AoE"
+      render: text

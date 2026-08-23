@@ -1,0 +1,112 @@
+name: 학회 추가 요청
+description: 목록에 없는 학회를 추가해 달라고 요청한다
+title: "[학회 추가] "
+labels: ["학회 추가", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        기본 정보만 채워 주면 됩니다. **모르는 칸은 비워 두세요** —
+        빈칸이 추측한 값보다 낫습니다. 나머지는 관리자가 원문에서 확인합니다.
+
+        직접 PR을 올리고 싶으시면 [`CONTRIBUTING.md`](../blob/main/CONTRIBUTING.md)를 봐 주세요.
+
+  - type: input
+    id: name
+    attributes:
+      label: 학회 약칭
+      description: 화면에 표시될 이름입니다. `CCS`, `NDSS`, `PETS` 처럼 적어 주세요.
+      placeholder: PETS
+    validations:
+      required: true
+
+  - type: input
+    id: full_name
+    attributes:
+      label: 정식 명칭
+      placeholder: Privacy Enhancing Technologies Symposium
+
+  - type: input
+    id: link
+    attributes:
+      label: 학회 홈페이지
+      placeholder: https://petsymposium.org/
+    validations:
+      required: true
+
+  - type: input
+    id: cfp
+    attributes:
+      label: CFP 페이지 주소
+      description: 마감일이 **실제로 적혀 있는** 페이지입니다. 홈페이지와 다른 경우가 많습니다.
+      placeholder: https://petsymposium.org/cfp26.php
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: 분류
+      description: 어느 파일에 들어갈지 정하는 값입니다. 하나만 골라 주세요.
+      options:
+        - security-core (보안 코어)
+        - systems (시스템·OS)
+        - software (소프트웨어 보안)
+        - hardware (하드웨어 보안)
+        - ai-security (AI 보안)
+        - privacy (프라이버시·데이터 보호)
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: topics
+    attributes:
+      label: 세부분야
+      description: 필터에 쓰입니다. 여러 개 고르셔도 됩니다.
+      options:
+        - label: systems — 시스템·소프트웨어 보안
+        - label: hardware — 하드웨어 보안
+        - label: network — 네트워크 보안
+        - label: ai-security — AI 보안
+        - label: privacy — 프라이버시·데이터 보호
+
+  - type: textarea
+    id: dates
+    attributes:
+      label: 다음 마감 일정
+      description: |
+        아는 것만 채워 주세요. 원문 표기를 그대로 옮기셔도 됩니다 — 형식은 관리자가 맞춥니다.
+        **통보일(notification)이 가장 중요합니다.** 졸업 일정을 여기서 역산합니다.
+      value: |
+        개최 연도:
+        초록 마감:
+        본문 마감:
+        통보일:
+        카메라레디:
+        개최 기간:
+        개최 장소:
+        타임존(AoE가 기본):
+      render: text
+
+  - type: input
+    id: icore
+    attributes:
+      label: ICORE 등급
+      description: 아시는 경우에만 적어 주세요. `A*`, `A`, `B`, `C` 중 하나와 출처 연도.
+      placeholder: A* (CORE2023)
+
+  - type: textarea
+    id: why
+    attributes:
+      label: 추가할 이유
+      description: |
+        이 사이트는 한양대 시스템보안연구실이 투고 대상을 고르려고 만든 목록입니다.
+        AI 보안 / 소프트웨어 / 데이터 보호 / 하드웨어 보안과 어떻게 이어지는지 한두 줄로 적어 주세요.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: 확인
+      options:
+        - label: 적은 날짜는 모두 CFP 원문에서 확인 — 추측한 값 없음
+          required: true

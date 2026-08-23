@@ -1,0 +1,24 @@
+# PR 게이트. 빌드 성공 = 스키마 검증 통과 (BR-002).
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      # 스키마 위반이 있으면 여기서 멈춘다. 잘못된 데이터는 배포에 도달할 수 없다.
+      - run: npm run build
+      - run: npm run check

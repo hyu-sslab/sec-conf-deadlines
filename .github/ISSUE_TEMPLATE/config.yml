@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 직접 PR을 올리고 싶다
+    url: https://github.com/hyu-sslab/sec-conf-deadlines/blob/main/CONTRIBUTING.md
+    about: YAML 한 곳만 고치면 됩니다. 검증은 CI가 합니다

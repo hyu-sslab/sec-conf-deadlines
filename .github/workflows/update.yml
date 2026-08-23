@@ -1,0 +1,143 @@
+# 데이터 갱신. mode로 두 주기를 한 파일에서 분기한다.
+#   watch — 매일 연장 감시 (IR-002). 대상 0건이면 즉시 종료 (FR-042)
+#   full  — 월 1회 전체 수집 (IR-001). Claude Code headless로 /collect를 돌린다
+#
+# 결과는 항상 PR이다. main에 직접 커밋하지 않는다 (BR-003 · FR-044).
+#
+# 파이썬 스크립트는 표준 라이브러리만 쓴다. pip 설치 단계가 없는 이유다.
+#
+# ⚠ full 모드는 아직 로컬에서만 검증됐다. CI에서 처음 켤 때는
+#   workflow_dispatch로 한 번 수동 실행해 결과 PR을 확인한 뒤 스케줄을 믿는다.
+name: update
+
+on:
+  schedule:
+    - cron: "0 1,13 * * *"   # 매일 10:00 / 22:00 KST — watch
+    - cron: "0 0 1 * *"      # 매월 1일 09:00 KST — full
+  workflow_dispatch:
+    inputs:
+      mode:
+        type: choice
+        options: [watch, full]
+        default: watch
+      tier:
+        description: "full 모드에서 수집할 등급 (비우면 전체)"
+        type: choice
+        options: ["", watch, projected, refresh]
+        default: ""
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    # fork PR에서는 돌지 않는다 (시크릿 노출 방지).
+    if: github.repository == 'hyu-sslab/sec-conf-deadlines'
+    steps:
+      - uses: actions/checkout@v5
+
+      - id: mode
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            [ "${{ github.event.schedule }}" = "0 0 1 * *" ] \
+              && echo "mode=full"  >> "$GITHUB_OUTPUT" \
+              || echo "mode=watch" >> "$GITHUB_OUTPUT"
+          else
+            echo "mode=${{ inputs.mode }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - run: npm ci
+
+      # collect-targets.json·watchlist.json은 파일이 아니라 빌드 산출물이다.
+      - run: npm run build
+
+      # 1차 판정. 저장된 날짜가 원문에 그대로면 여기서 끝난다 (LLM 비용 0).
+      - name: watch
+        if: steps.mode.outputs.mode == 'watch'
+        env:
+          WEBHOOK: ${{ secrets.WATCH_WEBHOOK_URL }}
+        run: |
+          if [ -n "$WEBHOOK" ]; then
+            python3 scripts/watch.py --webhook "$WEBHOOK"
+          else
+            python3 scripts/watch.py
+          fi
+
+      # 2차 판정이 필요한 건이 있을 때만 Claude를 부른다.
+      - name: watch — 2차 판정
+        if: steps.mode.outputs.mode == 'watch'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          need=$(python3 -c "import json,pathlib,sys; p=pathlib.Path('scripts/.cache/watch-report.json'); \
+            print(sum(1 for v in json.loads(p.read_text())['verdicts'] if v['verdict']=='escalate') if p.exists() else 0)")
+          if [ "$need" = "0" ]; then echo "2차 판정 대상 0건 — 종료"; exit 0; fi
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "::warning::2차 판정 $need건이 남았으나 ANTHROPIC_API_KEY가 없다"; exit 0
+          fi
+          npx --yes @anthropic-ai/claude-code@latest -p "/collect --tier watch"
+
+      - name: full — 전체 수집
+        if: steps.mode.outputs.mode == 'full'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "::error::full 모드에는 ANTHROPIC_API_KEY가 필요하다"; exit 1
+          fi
+          npx --yes @anthropic-ai/claude-code@latest -p "/collect ${{ inputs.tier && format('--tier {0}', inputs.tier) || '' }}"
+
+      # 스키마 검증. 실패하면 PR을 만들지 않는다 (BR-002).
+      - name: validate
+        run: npm run build
+
+      - id: diff
+        run: |
+          git diff --quiet -- data/ && echo "changed=false" >> "$GITHUB_OUTPUT" \
+                                    || echo "changed=true"  >> "$GITHUB_OUTPUT"
+
+      - name: PR 생성
+        if: steps.diff.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MODE: ${{ steps.mode.outputs.mode }}
+        run: |
+          python3 scripts/report.py commit-message > /tmp/commit.txt
+          python3 scripts/report.py pr-body > /tmp/pr.md
+          branch="auto/${MODE}-$(date -u +%Y%m%d-%H%M)"
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$branch"
+          git add data/
+          git commit -F /tmp/commit.txt
+          git push -u origin "$branch"
+          gh pr create --title "$(head -1 /tmp/commit.txt)" \
+                       --body-file /tmp/pr.md --label "auto/${MODE}"
+
+      # 실패를 조용히 넘기지 않는다. 사람이 봐야 할 건은 이슈로 남는다.
+      - name: 실패·차단 건 이슈 등록
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if python3 scripts/report.py failures > /tmp/failed.md; then
+            gh issue create --title "수집 실패 $(date -u +%Y-%m-%d)" \
+                            --label "수집 실패" --body-file /tmp/failed.md
+          else
+            echo "실패 건 없음"
+          fi
