@@ -68,6 +68,7 @@ import { href } from '../lib/urls.ts';
         DEFAULT_HORIZON_MONTHS,
         RELAXED_TIER,
         TOAST_MS,
+        monthBarHeight,
         urgencyTier,
       } from '../lib/config.ts';
 
@@ -393,7 +394,7 @@ import { href } from '../lib/urls.ts';
             const label = cell.querySelector<HTMLElement>('[data-count]');
             if (label) label.textContent = String(n);
             const bar = cell.querySelector<HTMLElement>('[data-bar]');
-            if (bar) bar.style.height = `${n === 0 ? 0 : Math.ceil((n / peak) * 4) * 6}px`;
+            if (bar) bar.style.height = `${monthBarHeight(n, peak)}px`;
           }
 
           const next = new URLSearchParams();

@@ -22,6 +22,21 @@ export function urgencyTier(dday: number): 1 | 2 | 3 {
   return 3;
 }
 
+/**
+ * 월 스트립의 밀도 막대.
+ *
+ * 서버 렌더·클라이언트 갱신·CSS 상자 높이 셋이 같은 값을 써야 한다.
+ * 한 곳만 줄였다가 막대가 상자를 넘어 건수를 덮은 적이 있다.
+ */
+export const MONTH_BAR = { levels: 4, maxHeight: 14 } as const;
+
+/** 건수 → 막대 픽셀 높이. 0건이면 그리지 않는다. */
+export function monthBarHeight(count: number, peak: number): number {
+  if (count === 0) return 0;
+  const level = Math.ceil((count / Math.max(1, peak)) * MONTH_BAR.levels);
+  return Math.round((level / MONTH_BAR.levels) * MONTH_BAR.maxHeight);
+}
+
 /** 마감을 모르는 항목은 급할 이유가 없다. 정렬·색에서 "여유"로 다룬다. */
 export const RELAXED_TIER = 3;
 

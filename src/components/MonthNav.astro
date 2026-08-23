@@ -11,22 +11,20 @@ interface MonthCell {
   inDefault: boolean;
 }
 
+import { MONTH_BAR, monthBarHeight } from '../lib/config.ts';
+
 interface Props {
   months: MonthCell[];
   activeKey: string | null;
 }
 
 const { months, activeKey } = Astro.props;
-const max = Math.max(1, ...months.filter((m) => m.inDefault).map((m) => m.count));
-
-/** 밀도는 4단계로 정규화한다. 절대값 비교가 아니라 군집 인지가 목적이다. */
-const levelOf = (count: number) => (count === 0 ? 0 : Math.ceil((count / max) * 4));
+const peak = Math.max(1, ...months.filter((m) => m.inDefault).map((m) => m.count));
 ---
 
-<nav class="nav nx-scroll" aria-label="월별 마감 건수">
+<nav class="nav nx-scroll" aria-label="월별 마감 건수" style={`--bar-max:${MONTH_BAR.maxHeight}px`}>
   {
     months.map((month) => {
-      const level = levelOf(month.count);
       const active = month.key === activeKey;
       const Tag = month.count === 0 ? 'span' : 'a';
       return (
@@ -42,7 +40,7 @@ const levelOf = (count: number) => (count === 0 ? 0 : Math.ceil((count / max) * 
           <span class="label">{month.label}</span>
           <span class="count" data-count>{month.count}</span>
           <span class="barbox">
-            <span class="bar" data-bar style={`height:${level * 6}px`} />
+            <span class="bar" data-bar style={`height:${monthBarHeight(month.count, peak)}px`} />
           </span>
         </Tag>
       );
@@ -62,7 +60,7 @@ const levelOf = (count: number) => (count === 0 ? 0 : Math.ceil((count / max) * 
   .cell {
     flex: none;
     width: 46px;
-    height: 52px;
+    height: 56px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -114,10 +112,16 @@ const levelOf = (count: number) => (count === 0 ? 0 : Math.ceil((count / max) * 
     color: var(--ink3);
   }
 
+  /*
+   * flex: none이 아니면 셀 높이에 눌려 상자가 줄고, 막대가 잘려 밀도 차이가
+   * 사라진다. overflow는 마지막 방어선이다 — 계산이 틀려도 건수를 덮지 못한다.
+   */
   .barbox {
+    flex: none;
     display: flex;
     align-items: flex-end;
-    height: 12px;
+    height: var(--bar-max);
+    overflow: hidden;
   }
 
   /* 밀도 막대는 무채색으로 남긴다 — 색은 D-day가 독점한다. */
