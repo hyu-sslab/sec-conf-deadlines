@@ -24,8 +24,8 @@ import { href } from '../lib/urls.ts';
     display: flex;
     align-items: center;
     gap: 9px;
-    min-height: 58px;
-    padding: 6px 2px 6px 14px;
+    min-height: 52px;
+    padding: 4px 2px 4px 14px;
     border-bottom: 1px solid var(--rule);
   }
 
@@ -33,7 +33,7 @@ import { href } from '../lib/urls.ts';
   .logo {
     flex: none;
     width: auto;
-    height: 28px;
+    height: 25px;
   }
 
   :global(html[data-theme='dark']) .logo {
@@ -58,7 +58,7 @@ import { href } from '../lib/urls.ts';
   .scope {
     /* 줄 높이를 넉넉히 준다 — overflow:hidden은 세로로도 자르므로
        디센더(g·y·p)가 line-box를 넘으면 꼬리가 깎인다. */
-    font: 600 10.5px/17px var(--sans);
+    font: 600 10px/15px var(--sans);
     letter-spacing: -0.015em;
     color: var(--ink2);
     white-space: nowrap;
@@ -67,7 +67,7 @@ import { href } from '../lib/urls.ts';
   }
 
   .name {
-    font: 700 17px/24px var(--sans);
+    font: 700 16px/21px var(--sans);
     letter-spacing: -0.035em;
     color: var(--ink);
     white-space: nowrap;

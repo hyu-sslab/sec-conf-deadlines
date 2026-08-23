@@ -56,19 +56,19 @@ const levelOf = (count: number) => (count === 0 ? 0 : Math.ceil((count / max) * 
     display: flex;
     gap: 2px;
     overflow-x: auto;
-    padding: 14px 12px 0;
+    padding: 8px 12px 0;
   }
 
   .cell {
     flex: none;
-    width: 50px;
-    height: 80px;
+    width: 46px;
+    height: 52px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-end;
-    gap: 5px;
-    padding: 0 0 6px;
+    gap: 2px;
+    padding: 0 0 5px;
     border-bottom: 2px solid transparent;
     text-decoration: none;
     color: inherit;
@@ -91,7 +91,7 @@ const levelOf = (count: number) => (count === 0 ? 0 : Math.ceil((count / max) * 
   }
 
   .label {
-    font: 400 13px/18px var(--sans);
+    font: 400 12px/15px var(--sans);
     color: var(--ink2);
   }
 
@@ -101,7 +101,7 @@ const levelOf = (count: number) => (count === 0 ? 0 : Math.ceil((count / max) * 
   }
 
   .count {
-    font: 600 17px/22px var(--mono);
+    font: 600 13px/16px var(--mono);
     letter-spacing: -0.03em;
     color: var(--ink2);
   }
@@ -117,7 +117,7 @@ const levelOf = (count: number) => (count === 0 ? 0 : Math.ceil((count / max) * 
   .barbox {
     display: flex;
     align-items: flex-end;
-    height: 26px;
+    height: 12px;
   }
 
   /* 밀도 막대는 무채색으로 남긴다 — 색은 D-day가 독점한다. */
