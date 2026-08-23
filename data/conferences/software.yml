@@ -1,0 +1,152 @@
+category: software
+label: 소프트웨어 보안
+label_en: Software Security
+order: 3
+
+conferences:
+  - id: icse
+    name: ICSE
+    full_name: International Conference on Software Engineering
+    link: https://conf.researchr.org/home/icse-2027
+    dblp: https://dblp.org/db/conf/icse/index.html
+    topics: [systems]
+    type: conference
+    ranks:
+      icore: { rank: "A*", source: CORE2023 }
+      internal: { grade: A, adjusted_if: 1.3, extra_index: 1.6, quality_index: 11, valid_year: 2025 }
+      bk21: { sci_equivalent: true, code: BKCS0018 }
+    editions:
+      - year: 2027
+        cycle: 1
+        dates:
+          abstract: "2026-06-23 23:59"
+          full_paper: "2026-06-30 23:59"
+          rebuttal: ["2026-09-23", "2026-09-25"]
+          notification: "2026-10-20"
+          camera_ready: "2026-11-24"
+        conference_date: "2027-04-25 ~ 2027-05-01"
+        place: "Dublin, Ireland"
+        note: "단일 사이클이다. 대수정 판정 시 최종 통보 2026-12-18, 카메라레디 2027-01-25."
+        source_url: https://conf.researchr.org/track/icse-2027/icse-2027-research-track
+        last_verified_at: "2026-08-23"
+        confidence: auto
+
+  - id: fse
+    name: FSE
+    full_name: ACM SIGSOFT Symposium on the Foundations of Software Engineering
+    link: https://conf.researchr.org/home/fse-2027
+    dblp: https://dblp.org/db/conf/sigsoft/index.html
+    topics: [systems]
+    type: conference
+    ranks:
+      icore: { rank: "A*", source: CORE2023 }
+      internal: { grade: A, adjusted_if: 1.3, extra_index: 1.6, quality_index: 11, valid_year: 2025 }
+      bk21: { sci_equivalent: true, code: BKCS0005 }
+    editions:
+      - year: 2027
+        cycle: 1
+        dates:
+          abstract: null
+          full_paper: "2026-10-02 23:59"
+          rebuttal: ["2026-12-14", "2026-12-18"]
+          notification: "2027-01-22"
+          camera_ready: null
+        conference_date: "2027-07-12 ~ 2027-07-16"
+        place: "Shenzhen, China"
+        note: "대수정 재제출 2027-03-05. 연구 트랙 상세 페이지는 로그인이 걸려 있어 메인 일정표에서 읽었다."
+        source_url: https://conf.researchr.org/home/fse-2027
+        last_verified_at: "2026-08-23"
+        confidence: auto
+
+  - id: pldi
+    name: PLDI
+    full_name: SIGPLAN Conference on Programming Language Design and Implementation
+    link: https://pldi27.sigplan.org/
+    dblp: https://dblp.org/db/conf/pldi/index.html
+    topics: [systems]
+    type: conference
+    ranks:
+      icore: { rank: "A*", source: CORE2023 }
+      internal: { grade: A, adjusted_if: 1.3, extra_index: 1.6, quality_index: 11, valid_year: 2025 }
+      bk21: { sci_equivalent: true, code: BKCS0021 }
+    editions:
+      - year: 2026
+        cycle: 1
+        dates:
+          abstract: null
+          full_paper: "2025-11-13 23:59"
+          notification: null
+          camera_ready: null
+        conference_date: "2026-06-15 ~ 2026-06-19"
+        place: "Boulder, CO, USA"
+        note: "지난 에디션. 통보일 미수집."
+        source_url: https://pldi26.sigplan.org/
+        last_verified_at: "2026-08-23"
+        confidence: auto
+      - year: 2027
+        cycle: 1
+        dates:
+          abstract: null
+          full_paper: "2026-11-12 23:59"
+          rebuttal: ["2027-02-16", "2027-02-18"]
+          notification: "2027-03-04"
+          camera_ready: "2027-04-15"
+        conference_date: "2027-06-05 ~ 2027-06-11"
+        place: "Atlanta, GA, USA"
+        note: "수정 마감 2027-03-23, 최종 통보 2027-04-01. 사이트에 타임존 표기가 없어 AoE로 가정했다."
+        source_url: https://pldi27.sigplan.org/
+        last_verified_at: "2026-08-23"
+        confidence: auto
+
+  - id: popl
+    name: POPL
+    full_name: Symposium on Principles of Programming Languages
+    link: https://popl27.sigplan.org/
+    dblp: https://dblp.org/db/conf/popl/index.html
+    topics: [systems]
+    type: conference
+    ranks:
+      icore: { rank: "A*", source: CORE2023 }
+      internal: { grade: A, adjusted_if: 1.3, extra_index: 1.6, quality_index: 11, valid_year: 2025 }
+      bk21: { sci_equivalent: true, code: BKCS0022 }
+    editions:
+      - year: 2027
+        cycle: 1
+        dates:
+          abstract: null
+          full_paper: "2026-07-09 23:59"
+          rebuttal: ["2026-09-07", "2026-09-10"]
+          notification: "2026-10-05"
+          camera_ready: "2026-11-20"
+        conference_date: "2027-01-10 ~ 2027-01-16"
+        place: "Mexico City, Mexico"
+        note: "수정 마감 2026-10-26, 최종 통보 2026-11-09."
+        source_url: https://popl27.sigplan.org/track/POPL-2027-popl-research-papers
+        last_verified_at: "2026-08-23"
+        confidence: auto
+
+  - id: ase
+    name: ASE
+    full_name: IEEE/ACM International Conference on Automated Software Engineering
+    link: https://conf.researchr.org/home/ase-2026
+    dblp: https://dblp.org/db/conf/kbse/index.html
+    topics: [systems]
+    type: conference
+    ranks:
+      icore: { rank: "A*", source: CORE2023 }
+      internal: { grade: B, adjusted_if: 1.1, extra_index: 1.2, quality_index: 11, valid_year: 2025 }
+      bk21: { sci_equivalent: true, code: BKCS0048 }
+    editions:
+      - year: 2026
+        cycle: 1
+        dates:
+          abstract: null
+          full_paper: "2026-03-26 23:59"
+          notification: null
+          camera_ready: null
+        conference_date: "2026-10-12 ~ 2026-10-16"
+        place: "Munich, Germany"
+        note: "연구 트랙 상세 페이지가 404다. 통보일 미수집."
+        source_url: https://conf.researchr.org/home/ase-2026
+        last_verified_at: "2026-08-23"
+        confidence: auto

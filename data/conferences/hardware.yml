@@ -1,0 +1,130 @@
+category: hardware
+label: 하드웨어 보안
+label_en: Hardware Security
+order: 2
+
+# 네 곳 모두 교내 A등급(보정IF 1.3) + BK21plus SCI급이다.
+# 하드웨어 보안 논문은 보안 학회보다 이쪽이 실적 환산에서 유리하다.
+conferences:
+  - id: isca
+    name: ISCA
+    full_name: International Symposium on Computer Architecture
+    link: https://iscaconf.org/
+    dblp: https://dblp.org/db/conf/isca/index.html
+    topics: [hardware]
+    type: conference
+    ranks:
+      icore: { rank: "A*", source: CORE2023 }
+      internal: { grade: A, adjusted_if: 1.3, extra_index: 1.6, quality_index: 11, valid_year: 2025 }
+      bk21: { sci_equivalent: true, code: BKCS0020 }
+    editions:
+      - year: 2026
+        cycle: 1
+        dates:
+          abstract: "2025-11-10 23:59"
+          full_paper: "2025-11-17 23:59"
+          rebuttal: ["2026-02-16", "2026-03-06"]
+          notification: "2026-03-27"
+          camera_ready: null
+        conference_date: "2026-06-27 ~ 2026-07-01"
+        place: "Raleigh, NC, USA"
+        note: "ISCA 2027(Atlanta, 2027-06-05~09)은 CFP 미공개. 카메라레디 일자는 CFP에 없다."
+        source_url: https://iscaconf.org/isca2026/submit/callforpapers.php
+        last_verified_at: "2026-08-23"
+        confidence: auto
+
+  - id: micro
+    name: MICRO
+    full_name: IEEE/ACM International Symposium on Microarchitecture
+    link: https://www.microarch.org/
+    dblp: https://dblp.org/db/conf/micro/index.html
+    topics: [hardware]
+    type: conference
+    ranks:
+      icore: { rank: "A*", source: ICORE2026 }
+      internal: { grade: A, adjusted_if: 1.3, extra_index: 1.6, quality_index: 11, valid_year: 2025 }
+      bk21: { sci_equivalent: true, code: BKCS0060 }
+    editions:
+      - year: 2026
+        cycle: 1
+        dates:
+          abstract: "2026-03-31 23:59"
+          full_paper: "2026-04-07 23:59"
+          rebuttal: ["2026-06-03", "2026-06-17"]
+          notification: "2026-07-07"
+          camera_ready: "2026-09-11"
+        timezone: America/New_York
+        conference_date: "2026-10-31 ~ 2026-11-04"
+        place: "Athens, Greece"
+        note: "다른 학회와 달리 AoE가 아니라 EDT 기준이다. MICRO 2027은 CFP 미공개."
+        source_url: https://www.microarch.org/micro59/submit/papers.php
+        last_verified_at: "2026-08-23"
+        confidence: auto
+
+  - id: hpca
+    name: HPCA
+    full_name: IEEE International Symposium on High-Performance Computer Architecture
+    link: https://hpca-conf.org/
+    dblp: https://dblp.org/db/conf/hpca/index.html
+    topics: [hardware]
+    type: conference
+    ranks:
+      icore: { rank: "A*", source: CORE2023 }
+      internal: { grade: A, adjusted_if: 1.3, extra_index: 1.6, quality_index: 11, valid_year: 2025 }
+      bk21: { sci_equivalent: true, code: BKCS0059 }
+    editions:
+      - year: 2027
+        cycle: 1
+        dates:
+          abstract: "2026-07-24 23:59"
+          full_paper: "2026-07-31 23:59"
+          rebuttal: ["2026-09-28", "2026-10-09"]
+          notification: "2026-11-06"
+          camera_ready: null
+        conference_date: "2027-03-20 ~ 2027-03-24"
+        place: "Salt Lake City, UT, USA"
+        note: "카메라레디는 CFP에 TBA로 표기돼 있다."
+        source_url: https://conf.researchr.org/track/hpca-2027/hpca-2027-main-conference
+        last_verified_at: "2026-08-23"
+        confidence: auto
+
+  - id: asplos
+    name: ASPLOS
+    full_name: Architectural Support for Programming Languages and Operating Systems
+    link: https://www.asplos-conference.org/
+    dblp: https://dblp.org/db/conf/asplos/index.html
+    topics: [hardware, systems]
+    type: conference
+    ranks:
+      icore: { rank: "A*", source: CORE2023 }
+      internal: { grade: A, adjusted_if: 1.3, extra_index: 1.6, quality_index: 11, valid_year: 2025 }
+      bk21: { sci_equivalent: true, code: BKCS0038 }
+    editions:
+      - year: 2027
+        cycle: 1
+        dates:
+          abstract: null
+          full_paper: "2026-04-15 23:59"
+          rebuttal: ["2026-07-06", "2026-07-09"]
+          notification: "2026-07-27"
+          camera_ready: null
+        conference_date: "2027-04-11 ~ 2027-04-15"
+        place: "Heraklion, Crete, Greece"
+        note: "April cycle. 별도 초록 마감이 없다. 카메라레디는 통보 후 6주로만 규정돼 일자가 없다."
+        source_url: https://www.asplos-conference.org/asplos2027/cfp/
+        last_verified_at: "2026-08-23"
+        confidence: auto
+      - year: 2027
+        cycle: 2
+        dates:
+          abstract: null
+          full_paper: "2026-09-09 23:59"
+          rebuttal: ["2026-12-01", "2026-12-04"]
+          notification: "2026-12-21"
+          camera_ready: null
+        conference_date: "2027-04-11 ~ 2027-04-15"
+        place: "Heraklion, Crete, Greece"
+        note: "September cycle."
+        source_url: https://www.asplos-conference.org/asplos2027/cfp/
+        last_verified_at: "2026-08-23"
+        confidence: auto

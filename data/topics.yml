@@ -1,0 +1,31 @@
+# 세부분야 태그 (FR-011)
+#
+# 랩 연구 축(AI-based / Software / Data Protection / Hardware-based Security)에
+# 맞춰 5개로 정리했다. 확정 학회 26건이 실제로 쓰는 태그만 남긴다 —
+# 아무 학회도 달지 않은 태그는 UI에서 빈 필터 칩이 되기 때문이다.
+# crypto / forensics / usability는 해당 학회가 목록에 들어오면 다시 추가한다.
+systems:
+  label: 시스템·소프트웨어 보안
+  short: 시스템
+  label_en: Systems & Software Security
+  order: 1
+hardware:
+  label: 하드웨어 보안
+  short: 하드웨어
+  label_en: Hardware Security
+  order: 2
+network:
+  label: 네트워크 보안
+  short: 네트워크
+  label_en: Network Security
+  order: 3
+ai-security:
+  label: AI 보안
+  short: AI 보안
+  label_en: AI Security
+  order: 4
+privacy:
+  label: 프라이버시·데이터 보호
+  short: 프라이버시
+  label_en: Privacy & Data Protection
+  order: 5

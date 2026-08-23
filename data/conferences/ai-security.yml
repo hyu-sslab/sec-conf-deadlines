@@ -1,0 +1,142 @@
+category: ai-security
+label: AI 보안
+label_en: AI Security
+order: 5
+
+# 이 다섯 곳은 보안 학회가 아니라 AI 학회다. AI-based Security 논문을 낼 수
+# 있는 곳이라 목록에 두지만, 화면에서는 topics 필터로 분리해야 "보안 학회
+# 마감"이라는 성격이 흐려지지 않는다.
+conferences:
+  - id: neurips
+    name: NeurIPS
+    full_name: Conference on Neural Information Processing Systems
+    link: https://neurips.cc/
+    dblp: https://dblp.org/db/conf/nips/index.html
+    topics: [ai-security]
+    type: conference
+    ranks:
+      icore: { rank: "A*", source: CORE2023 }
+      internal: { grade: A, adjusted_if: 1.3, extra_index: 1.6, quality_index: 11, valid_year: 2025 }
+      bk21: { sci_equivalent: true, code: BKCS0010 }
+    editions:
+      - year: 2026
+        cycle: 1
+        dates:
+          abstract: "2026-05-04 23:59"
+          full_paper: "2026-05-06 23:59"
+          notification: "2026-09-24"
+          camera_ready: null
+        conference_date: null
+        place: null
+        note: "CFP에 리버탈 기간·카메라레디·개최 일정이 없다."
+        source_url: https://neurips.cc/Conferences/2026/CallForPapers
+        last_verified_at: "2026-08-23"
+        confidence: auto
+
+  - id: icml
+    name: ICML
+    full_name: International Conference on Machine Learning
+    link: https://icml.cc/
+    dblp: https://dblp.org/db/conf/icml/index.html
+    topics: [ai-security]
+    type: conference
+    ranks:
+      icore: { rank: "A*", source: CORE2023 }
+      internal: { grade: A, adjusted_if: 1.3, extra_index: 1.6, quality_index: 11, valid_year: 2025 }
+      bk21: { sci_equivalent: true, code: BKCS0016 }
+    editions:
+      - year: 2026
+        cycle: 1
+        dates:
+          abstract: "2026-01-23 23:59"
+          full_paper: "2026-01-28 23:59"
+          rebuttal: ["2026-03-30", "2026-04-07"]
+          notification: "2026-04-30"
+          camera_ready: null
+        conference_date: "2026-07-07 ~ 2026-07-09"
+        place: "San Diego, CA, USA"
+        note: "ICML 2027은 CFP 미공개."
+        source_url: https://icml.cc/Conferences/2026/Dates
+        last_verified_at: "2026-08-23"
+        confidence: auto
+
+  - id: aaai
+    name: AAAI
+    full_name: AAAI Conference on Artificial Intelligence
+    link: https://aaai.org/conference/aaai/aaai-27/
+    dblp: https://dblp.org/db/conf/aaai/index.html
+    topics: [ai-security]
+    type: conference
+    ranks:
+      icore: { rank: "A*", source: ICORE2026 }
+      internal: { grade: A, adjusted_if: 1.3, extra_index: 1.6, quality_index: 11, valid_year: 2025 }
+      bk21: { sci_equivalent: true, code: BKCS0026 }
+    editions:
+      - year: 2027
+        cycle: 1
+        dates:
+          abstract: "2026-07-21 23:59"
+          full_paper: "2026-07-28 23:59"
+          rebuttal: ["2026-10-19", "2026-10-25"]
+          notification: "2026-11-30"
+          camera_ready: "2026-12-14"
+        conference_date: "2027-02-16 ~ 2027-02-23"
+        place: "Montréal, Canada"
+        note: "2단계 심사다. 1단계 탈락 통보 2026-09-24. 트랙별로 일정이 다를 수 있다."
+        source_url: https://aaai.org/conference/aaai/aaai-27/
+        last_verified_at: "2026-08-23"
+        confidence: auto
+
+  - id: ijcai
+    name: IJCAI
+    full_name: International Joint Conference on Artificial Intelligence
+    link: https://2026.ijcai.org/
+    dblp: https://dblp.org/db/conf/ijcai/index.html
+    topics: [ai-security]
+    type: conference
+    ranks:
+      icore: { rank: "A*", source: CORE2023 }
+      internal: { grade: A, adjusted_if: 1.3, extra_index: 1.6, quality_index: 11, valid_year: 2025 }
+      bk21: { sci_equivalent: true, code: BKCS0057 }
+    editions:
+      - year: 2026
+        cycle: 1
+        dates:
+          abstract: "2026-01-12 23:59"
+          full_paper: "2026-01-19 23:59"
+          rebuttal: ["2026-04-07", "2026-04-10"]
+          notification: "2026-04-29"
+          camera_ready: "2026-05-20"
+        conference_date: "2026-08-18 ~ 2026-08-21"
+        place: "Bremen, Germany"
+        note: "IJCAI-ECAI 공동 개최. IJCAI 2027(2027-08-14~20)은 초록 마감 2027-02-01만 알려져 있고 CFP는 미공개."
+        source_url: https://2026.ijcai.org/important-dates/
+        last_verified_at: "2026-08-23"
+        confidence: auto
+
+  - id: cvpr
+    name: CVPR
+    full_name: Conference on Computer Vision and Pattern Recognition
+    link: https://cvpr.thecvf.com/
+    dblp: https://dblp.org/db/conf/cvpr/index.html
+    topics: [ai-security]
+    type: conference
+    ranks:
+      icore: { rank: "A*", source: CORE2023 }
+      internal: { grade: A, adjusted_if: 1.3, extra_index: 1.6, quality_index: 11, valid_year: 2025 }
+      bk21: { sci_equivalent: true, code: BKCS0009 }
+    editions:
+      - year: 2026
+        cycle: 1
+        dates:
+          abstract: "2025-11-07 23:59"
+          full_paper: "2025-11-13 23:59"
+          rebuttal: ["2026-01-22", "2026-01-29"]
+          notification: "2026-02-20"
+          camera_ready: null
+        conference_date: "2026-06-03 ~ 2026-06-07"
+        place: "Denver, CO, USA"
+        note: "보충자료 마감 2025-11-20. CVPR 2027은 CFP 미공개."
+        source_url: https://cvpr.thecvf.com/Conferences/2026/Dates
+        last_verified_at: "2026-08-23"
+        confidence: auto

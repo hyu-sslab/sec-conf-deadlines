@@ -1,0 +1,275 @@
+category: security-core
+label: 보안 코어
+label_en: Core Security
+order: 1
+
+conferences:
+  - id: ieee-sp
+    name: IEEE S&P
+    full_name: IEEE Symposium on Security and Privacy
+    link: https://sp2027.ieee-security.org/
+    dblp: https://dblp.org/db/conf/sp/index.html
+    topics: [systems, network, privacy]
+    type: conference
+    ranks:
+      icore: { rank: "A*", source: CORE2023 }
+      internal: { grade: A, adjusted_if: 1.3, extra_index: 1.6, quality_index: 11, valid_year: 2025 }
+      bk21: { sci_equivalent: true, code: BKCS0013 }
+    editions:
+      - year: 2027
+        cycle: 1
+        dates:
+          abstract: "2026-06-04 23:59"
+          full_paper: "2026-06-11 23:59"
+          rebuttal: ["2026-08-26", "2026-09-04"]
+          notification: "2026-09-11"
+          camera_ready: "2026-10-16"
+        timezone: Etc/GMT+12
+        conference_date: "2027-05-17 ~ 2027-05-20"
+        place: "Montreal, Canada"
+        note: "First cycle. Early-reject 통보 2026-07-27, shepherd 제출 2026-10-02."
+        source_url: https://sp2027.ieee-security.org/cfpapers.html
+        last_verified_at: "2026-08-23"
+        confidence: auto
+      - year: 2027
+        cycle: 2
+        dates:
+          abstract: "2026-11-10 23:59"
+          full_paper: "2026-11-17 23:59"
+          rebuttal: ["2027-02-17", "2027-02-26"]
+          notification: "2027-03-05"
+          camera_ready: "2027-04-08"
+        timezone: Etc/GMT+12
+        conference_date: "2027-05-17 ~ 2027-05-20"
+        place: "Montreal, Canada"
+        note: "Second cycle. Early-reject 통보 2027-01-18, shepherd 제출 2027-03-26."
+        source_url: https://sp2027.ieee-security.org/cfpapers.html
+        last_verified_at: "2026-08-23"
+        confidence: auto
+
+  - id: ccs
+    name: CCS
+    full_name: ACM Conference on Computer and Communications Security
+    link: https://www.sigsac.org/ccs/CCS2026
+    dblp: https://dblp.org/db/conf/ccs/index.html
+    topics: [systems, network, privacy]
+    type: conference
+    ranks:
+      icore: { rank: "A*", source: CORE2023 }
+      internal: { grade: A, adjusted_if: 1.3, extra_index: 1.6, quality_index: 11, valid_year: 2025 }
+      bk21: { sci_equivalent: true, code: BKCS0001 }
+    editions:
+      - year: 2026
+        cycle: 1
+        dates:
+          abstract: "2026-01-07 23:59"
+          full_paper: "2026-01-14 23:59"
+          rebuttal: ["2026-03-17", "2026-03-20"]
+          notification: "2026-04-09"
+          camera_ready: "2026-08-09"
+        conference_date: "2026-11-15 ~ 2026-11-19"
+        place: "The Hague, The Netherlands"
+        note: "Abstract 등록은 필수다. Early-reject 통보 2026-02-20."
+        source_url: https://www.sigsac.org/ccs/CCS2026/call-for/call-for-papers.html
+        last_verified_at: "2026-08-23"
+        confidence: auto
+      - year: 2026
+        cycle: 2
+        dates:
+          abstract: "2026-04-22 23:59"
+          full_paper: "2026-04-29 23:59"
+          rebuttal: ["2026-06-29", "2026-07-01"]
+          notification: "2026-07-17"
+          camera_ready: "2026-09-13"
+        conference_date: "2026-11-15 ~ 2026-11-19"
+        place: "The Hague, The Netherlands"
+        note: "Artifact 업로드 2026-05-02. CCS 2027(Atlanta, 2027-10)은 CFP 미공개."
+        source_url: https://www.sigsac.org/ccs/CCS2026/call-for/call-for-papers.html
+        last_verified_at: "2026-08-23"
+        confidence: auto
+      - year: 2027
+        cycle: 1
+        dates:
+          abstract: null
+          full_paper: null
+          notification: null
+          camera_ready: null
+        conference_date: null
+        place: "Atlanta, USA"
+        note: "CCS 2027 페이지는 열렸으나 일정이 아직 없다 — \"Coming in October 2027\"과 개최지만 게시돼 있다."
+        source_url: https://www.sigsac.org/ccs/CCS2027/
+        last_verified_at: "2026-08-23"
+        confidence: auto
+
+  - id: usenix-sec
+    name: USENIX Security
+    full_name: USENIX Security Symposium
+    link: https://www.usenix.org/conference/usenixsecurity27
+    dblp: https://dblp.org/db/conf/uss/index.html
+    topics: [systems, network]
+    type: conference
+    ranks:
+      icore: { rank: "A*", source: CORE2023 }
+      internal: { grade: B, adjusted_if: 1.1, extra_index: 1.2, quality_index: 11, valid_year: 2025 }
+      bk21: { sci_equivalent: true, code: BKCS0063 }
+    editions:
+      - year: 2027
+        cycle: 1
+        dates:
+          abstract: "2026-08-18"
+          full_paper: "2026-08-25 23:59"
+          rebuttal: ["2026-11-05", "2026-11-12"]
+          notification: "2026-12-03"
+          camera_ready: "2027-01-14"
+        conference_date: "2027-08-11 ~ 2027-08-13"
+        place: "Denver, CO, USA"
+        note: "usenix.org가 자동 요청을 403으로 차단해 원문 대조 불가. 등록 마감 2026-08-18. 통보일 미수집."
+        source_url: https://www.usenix.org/conference/usenixsecurity27/call-for-papers
+        last_verified_at: "2026-08-23"
+        confidence: auto
+      - year: 2027
+        cycle: 2
+        dates:
+          abstract: "2027-01-19"
+          full_paper: "2027-01-26 23:59"
+          rebuttal: ["2027-04-08", "2027-04-15"]
+          notification: "2027-05-06"
+          camera_ready: "2027-06-03"
+        conference_date: "2027-08-11 ~ 2027-08-13"
+        place: "Denver, CO, USA"
+        note: "Cycle 2. 등록 마감 2027-01-19. 원문 대조 불가(403)."
+        source_url: https://www.usenix.org/conference/usenixsecurity27/call-for-papers
+        last_verified_at: "2026-08-23"
+        confidence: auto
+
+  - id: ndss
+    name: NDSS
+    full_name: Network and Distributed System Security Symposium
+    link: https://www.ndss-symposium.org/ndss2027/
+    dblp: https://dblp.org/db/conf/ndss/index.html
+    topics: [network, systems]
+    type: conference
+    ranks:
+      icore: { rank: "A*", source: CORE2023 }
+      internal: { grade: C, adjusted_if: 0.6, extra_index: 1.0, quality_index: 6, valid_year: 2025 }
+      bk21: { sci_equivalent: true, code: BKCS0061 }
+    editions:
+      - year: 2027
+        cycle: 1
+        dates:
+          abstract: null
+          full_paper: "2026-05-06 23:59"
+          rebuttal: ["2026-07-15", "2026-07-17"]
+          notification: "2026-07-29"
+          camera_ready: "2026-09-30"
+        conference_date: "2027-03-22 ~ 2027-03-26"
+        place: "Seoul, Republic of Korea"
+        note: "Summer cycle. CFP는 리버탈·통보일을 (tentative)로 표기한다."
+        source_url: https://www.ndss-symposium.org/ndss2027/submissions/call-for-papers/
+        last_verified_at: "2026-08-23"
+        confidence: auto
+      - year: 2027
+        cycle: 2
+        dates:
+          abstract: null
+          full_paper: "2026-08-19 23:59"
+          notification: "2026-11-04"
+          camera_ready: "2027-01-06"
+        conference_date: "2027-03-22 ~ 2027-03-26"
+        place: "Seoul, Republic of Korea"
+        note: "Fall cycle."
+        source_url: https://www.ndss-symposium.org/ndss2027/submissions/call-for-papers/
+        last_verified_at: "2026-08-23"
+        confidence: auto
+
+  - id: acsac
+    name: ACSAC
+    full_name: Annual Computer Security Applications Conference
+    link: https://www.acsac.org/2026/
+    dblp: https://dblp.org/db/conf/acsac/index.html
+    topics: [systems, network]
+    type: conference
+    ranks:
+      icore: { rank: A, source: CORE2023 }
+      internal: { grade: C, adjusted_if: 0.6, extra_index: 1.0, quality_index: 6, valid_year: 2025 }
+      bk21: { sci_equivalent: false, code: BKCS0065 }
+    editions:
+      - year: 2026
+        cycle: 1
+        dates:
+          abstract: null
+          full_paper: "2026-05-26 23:59"
+          rebuttal: ["2026-08-18", "2026-08-25"]
+          notification: "2026-09-08"
+          camera_ready: "2026-10-22"
+        conference_date: "2026-12-07 ~ 2026-12-11"
+        place: "Los Angeles, CA, USA"
+        note: "CFP가 연도 없이 월·일만 표기한다. 개최일(2026-12) 기준으로 연도를 보정했다."
+        source_url: https://www.acsac.org/2026/submissions/papers/
+        last_verified_at: "2026-08-23"
+        confidence: auto
+
+  - id: esorics
+    name: ESORICS
+    full_name: European Symposium on Research in Computer Security
+    link: https://sites.google.com/di.uniroma1.it/esorics2026
+    dblp: https://dblp.org/db/conf/esorics/index.html
+    topics: [systems, privacy]
+    type: conference
+    ranks:
+      icore: { rank: A, source: CORE2023 }
+      internal: { grade: C, adjusted_if: 0.6, extra_index: 1.0, quality_index: 6, valid_year: 2025 }
+      bk21: { sci_equivalent: false, code: BKCS0123 }
+    editions:
+      - year: 2026
+        cycle: 1
+        dates:
+          abstract: null
+          full_paper: "2026-01-09 23:59"
+          notification: "2026-03-10"
+          camera_ready: "2026-03-24"
+        conference_date: "2026-09-14"
+        place: "Rome, Italy"
+        note: "Winter cycle. 대면 개최만 진행한다. 종료일은 CFP에 없다."
+        source_url: https://sites.google.com/di.uniroma1.it/esorics2026/call-for/papers
+        last_verified_at: "2026-08-23"
+        confidence: auto
+      - year: 2026
+        cycle: 2
+        dates:
+          abstract: null
+          full_paper: "2026-04-21 23:59"
+          notification: "2026-06-12"
+          camera_ready: "2026-06-26"
+        conference_date: "2026-09-14"
+        place: "Rome, Italy"
+        note: "Spring cycle. ESORICS 2027은 CFP 미공개."
+        source_url: https://sites.google.com/di.uniroma1.it/esorics2026/call-for/papers
+        last_verified_at: "2026-08-23"
+        confidence: auto
+
+  - id: raid
+    name: RAID
+    full_name: International Symposium on Research in Attacks, Intrusions and Defenses
+    link: https://raid-symposium.org/
+    dblp: https://dblp.org/db/conf/raid/index.html
+    topics: [systems, network]
+    type: conference
+    ranks:
+      icore: { rank: A, source: CORE2023 }
+      internal: { grade: C, adjusted_if: 0.6, extra_index: 1.0, quality_index: 6, valid_year: 2025 }
+      bk21: { sci_equivalent: false, code: BKCS0203 }
+    editions:
+      - year: 2026
+        cycle: 1
+        dates:
+          abstract: null
+          full_paper: "2026-04-16 23:59"
+          notification: "2026-07-10"
+          camera_ready: "2026-08-13"
+        conference_date: "2026-10-11 ~ 2026-10-14"
+        place: "Lancaster, UK"
+        note: "단일 라운드 심사로 리버탈·수정 라운드가 없다. RAID 2027은 CFP 미공개."
+        source_url: https://raid2026.org/call.html
+        last_verified_at: "2026-08-23"
+        confidence: auto
