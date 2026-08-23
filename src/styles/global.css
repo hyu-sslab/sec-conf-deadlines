@@ -1,0 +1,85 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--bg);
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+/*
+ * 디자인의 375×812 프레임을 그대로 옮긴다. 페이지 전체가 스크롤되면 월
+ * 네비게이터와 필터가 같이 밀려 올라가 버린다 — 월을 눌러 이동한 뒤에도
+ * 다른 달로 옮겨갈 수 있어야 하므로 상단은 고정하고 목록만 스크롤한다.
+ */
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  max-width: 480px;
+  margin-inline: auto;
+  background: var(--bg);
+  overflow: hidden;
+}
+
+@media (min-width: 481px) {
+  .app {
+    border-inline: 1px solid var(--rule);
+  }
+}
+
+/* 스크롤바를 숨긴다 — 가로 스크롤 영역이 잘린 것처럼 보이지 않게. */
+.nx-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.nx-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+button {
+  font-family: inherit;
+}
+
+a {
+  color: var(--brand);
+}
+
+:where(button, a, input, [tabindex]):focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* 시트는 열 때 프로그램으로 포커스를 옮긴다. 사용자가 키보드로 이동한 게
+   아니므로 포커스 링을 그리지 않는다. */
+dialog:focus-visible {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

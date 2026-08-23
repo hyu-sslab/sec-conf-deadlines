@@ -1,0 +1,241 @@
+---
+/**
+ * 목록 — 기본 화면 (FR-016). 전체가 빌드 타임에 렌더링된다. JS가 꺼져 있어도
+ * 목록·월 네비게이터·지난 마감 펼침이 동작한다 (NFR-009).
+ */
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import AppBar from '../components/AppBar.astro';
+import MonthNav from '../components/MonthNav.astro';
+import FilterBar from '../components/FilterBar.astro';
+import DeadlineCard from '../components/DeadlineCard.astro';
+import PastCard from '../components/PastCard.astro';
+import DetailSheet from '../components/DetailSheet.astro';
+import FilterSheet from '../components/FilterSheet.astro';
+import Toast from '../components/Toast.astro';
+import TabBar from '../components/TabBar.astro';
+import { DEFAULT_HORIZON_MONTHS } from '../lib/config.ts';
+import {
+  buildDeadlines,
+  compareByDeadline,
+  estimateNextEdition,
+  groupByMonth,
+  loadConferences,
+  monthsInHorizon,
+  recommendFor,
+  withinHorizon,
+  type Deadline,
+} from '../lib/deadlines.ts';
+
+const now = new Date();
+const records = await loadConferences();
+const all = buildDeadlines(records, now);
+
+const topicEntries = await getCollection('topics');
+const topicLabel = new Map(topicEntries.map((entry) => [entry.id, entry.data.label]));
+const labelFor = (item: Deadline) =>
+  item.conference.topics.map((topic) => topicLabel.get(topic) ?? topic).join(' · ');
+
+const dated = all.filter((item) => item.fullPaper !== null);
+const live = dated.filter((item) => !item.isPast);
+const past = dated.filter((item) => item.isPast).reverse();
+
+/**
+ * FR-021 — 다음 에디션이 아직 등록되지 않은 학회는 전년도 패턴으로 추정해
+ * 목록에 함께 올린다. 이게 없으면 CFP가 늦게 나오는 분야(AI 학회들이
+ * 대표적이다)는 화면에서 통째로 사라진다.
+ *
+ * BR-004에 따라 추정값에는 카운트다운을 적용하지 않는다 — 카드에 D-day 대신
+ * `예상` 라벨이 붙는다.
+ */
+const liveIds = new Set(live.map((item) => item.conference.id));
+const projected = records
+  .filter((conference) => !liveIds.has(conference.id) && conference.editions.length > 0)
+  .map((conference) => estimateNextEdition(conference, now))
+  .filter(
+    (item): item is Deadline => item !== null && item.fullPaper !== null && !item.isPast,
+  );
+
+const upcoming = [...live, ...projected].sort(compareByDeadline);
+
+/**
+ * 탐색 범위 (FR-017).
+ *
+ * 요구사항은 기본 6개월이었으나 12개월로 바꿨다. 다음 마감이 7~12개월 뒤인
+ * 학회가 절반 가까이라(AI 계열은 전부 그렇다) 6개월 기본은 목록을 반으로
+ * 잘라 보여준다. 좁히고 싶은 사람은 필터로 줄이면 되지만, 있는 줄도 몰랐던
+ * 마감은 줄일 수조차 없다.
+ */
+/** 필터를 초기화하면 이 값으로 돌아간다. 클라이언트 스크립트도 같은 상수를 쓴다. */
+const HORIZON_MONTHS = DEFAULT_HORIZON_MONTHS;
+const MAX_HORIZON = 12;
+
+const renderedKeys = monthsInHorizon(now, MAX_HORIZON);
+const defaultKeys = new Set(monthsInHorizon(now, HORIZON_MONTHS));
+const groups = groupByMonth(withinHorizon(upcoming, now, MAX_HORIZON));
+const groupByKey = new Map(groups.map((group) => [group.key, group]));
+
+const months = renderedKeys.map((key) => ({
+  key,
+  label: `${Number(key.slice(5))}월`,
+  count: groupByKey.get(key)?.items.length ?? 0,
+  inDefault: defaultKeys.has(key),
+}));
+
+const visibleGroups = groups;
+const firstNonEmpty = months.find((month) => month.inDefault && month.count > 0) ?? null;
+const defaultCount = groups
+  .filter((group) => defaultKeys.has(group.key))
+  .reduce((sum, group) => sum + group.items.length, 0);
+
+const topics = topicEntries
+  .sort((a, b) => a.data.order - b.data.order)
+  .map((entry) => ({ id: entry.id, label: entry.data.label, short: entry.data.short }));
+
+const untracked = all.filter((item) => item.fullPaper === null).length;
+---
+
+<Base>
+  <AppBar />
+  <MonthNav months={months} activeKey={firstNonEmpty?.key ?? null} />
+  <FilterBar horizonMonths={HORIZON_MONTHS} />
+
+  <main class="list" data-list data-scroll>
+    <span class="counter" data-visible-count hidden>{defaultCount}</span>
+
+    {
+      visibleGroups.map((group) => (
+        <section data-section={group.key} hidden={!defaultKeys.has(group.key) || undefined}>
+          <h2 class="month" id={`month-${group.key}`}>
+            <span>{group.year}년 {group.month}월</span>
+            <span class="rule" aria-hidden="true" />
+          </h2>
+          {group.items.map((item) => (
+            <DeadlineCard item={item} topicLabel={labelFor(item)} />
+          ))}
+        </section>
+      ))
+    }
+
+    {
+      visibleGroups.length === 0 && (
+        <p class="empty">앞으로 {HORIZON_MONTHS}개월 안에 등록된 마감이 없습니다.</p>
+      )
+    }
+
+    {
+      past.length > 0 && (
+        <details class="past">
+          <summary>지난 마감 {past.length}건</summary>
+          <div class="past-list">
+            {past.map((item) => (
+              <PastCard item={item} recommendation={recommendFor(item, all, now)} />
+            ))}
+          </div>
+        </details>
+      )
+    }
+
+    {
+      untracked > 0 && (
+        <p class="note">
+          일정을 아직 수집하지 못한 학회가 {untracked}곳 있습니다.
+        </p>
+      )
+    }
+  </main>
+
+  <DetailSheet />
+  <FilterSheet topics={topics} horizonMonths={HORIZON_MONTHS} />
+  <Toast />
+  <TabBar current="list" />
+</Base>
+
+<style>
+  /* 유일한 스크롤 영역. 상단(앱바·월 네비·필터)은 고정된다. */
+  .list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scroll-behavior: smooth;
+    padding: 0 16px 24px;
+  }
+
+  /* 건수는 필터 시트의 '적용 · N건'이 들고 있다. 목록 상단에서는 뺀다. */
+  .counter {
+    display: none;
+  }
+
+  /* 스티키 월 헤더 — 스크롤 중 현재 위치 감각을 유지한다 */
+  .month {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    padding: 14px 0 10px;
+    background: var(--bg);
+    font: 600 11px/14px var(--sans);
+    letter-spacing: 0.09em;
+    color: var(--ink3);
+    scroll-margin-top: 4px;
+  }
+
+  .rule {
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+
+  section[hidden] {
+    display: none;
+  }
+
+  .empty,
+  .note {
+    margin: 32px 0;
+    font: 400 13px/20px var(--sans);
+    color: var(--ink3);
+  }
+
+  .past {
+    margin-top: 14px;
+    border-top: 1px solid var(--rule);
+  }
+
+  .past > summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 52px;
+    margin-bottom: 4px;
+    color: var(--ink2);
+    font: 500 13px/18px var(--sans);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .past > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .past > summary::before {
+    content: '▸';
+    font-size: 9px;
+    color: var(--ink3);
+  }
+
+  .past[open] > summary::before {
+    content: '▾';
+  }
+
+  .past-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-bottom: 8px;
+  }
+</style>

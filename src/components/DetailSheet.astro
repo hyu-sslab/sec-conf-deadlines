@@ -1,0 +1,195 @@
+---
+/**
+ * 상세 바텀시트. 내용은 카드의 <template>을 복제해 채운다 — 같은 데이터를
+ * 두 벌로 렌더링하지 않기 위해서다. 추정 에디션은 분기 처리된다 (B-10).
+ */
+---
+
+<dialog class="sheet" id="detail-sheet" aria-label="학회 상세" tabindex="-1">
+  <div class="handle" aria-hidden="true"></div>
+
+  <div class="head">
+    <div class="titles">
+      <h2 id="ds-name"></h2>
+      <div class="badges" id="ds-badges"></div>
+    </div>
+    <span class="pill" id="ds-dday"></span>
+  </div>
+
+  <div id="ds-body"></div>
+
+  <p class="warn" id="ds-warn" hidden>
+    아직 공식 CFP가 나오지 않았습니다. 전년도 일정에서 1년을 더한 추정값이므로
+    실제 마감은 달라질 수 있습니다.
+  </p>
+
+  <div class="actions">
+    <button type="button" id="ds-save"></button>
+    <a id="ds-cfp" class="ext" rel="noopener" aria-label="CFP 원문 열기">↗</a>
+  </div>
+
+  <p class="hint" id="ds-hint">이 기기에 저장됩니다.</p>
+</dialog>
+
+<style>
+  .head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .titles {
+    min-width: 0;
+  }
+
+  #ds-name {
+    margin: 0;
+    font: 600 20px/26px var(--sans);
+    letter-spacing: -0.03em;
+  }
+
+  .badges {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+
+  .badges :global(.badge) {
+    display: flex;
+    align-items: center;
+    height: 22px;
+    padding: 0 8px;
+    border: 1px solid var(--ink3);
+    border-radius: 4px;
+    color: var(--ink2);
+    font: 500 11px/1 var(--sans);
+    white-space: nowrap;
+  }
+
+  .pill {
+    flex: none;
+    padding: 11px 14px;
+    border-radius: 999px;
+    font: 700 22px/1 var(--mono);
+    letter-spacing: -0.04em;
+    white-space: nowrap;
+  }
+
+  /* 추정값은 채워진 알약이 아니라 점선 테두리다 — 확정된 날짜와 같은
+     무게로 보이면 안 된다. */
+  .pill[data-estimated] {
+    background: none;
+    border: 1px dashed var(--ink3);
+    color: var(--ink3);
+    font: 600 15px/1 var(--sans);
+    padding: 8px 12px;
+  }
+
+  .warn {
+    margin: 16px 0 0;
+    padding: 11px 12px;
+    border: 1px dashed var(--ink3);
+    border-radius: 8px;
+    font: 400 12px/18px var(--sans);
+    color: var(--ink2);
+  }
+
+  .warn[hidden] {
+    display: none;
+  }
+
+  .pill[data-tier='1'] { background: var(--u1bg); color: var(--u1); }
+  .pill[data-tier='2'] { background: var(--u2bg); color: var(--u2); }
+  .pill[data-tier='3'] { background: var(--u3bg); color: var(--u3); }
+
+  #ds-body :global(dl) {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 14px;
+    margin: 20px 0 0;
+    border-top: 1px solid var(--rule);
+  }
+
+  #ds-body :global(dt) {
+    font: 400 13px/40px var(--sans);
+    color: var(--ink3);
+    border-top: 1px solid var(--rule);
+  }
+
+  #ds-body :global(dd) {
+    margin: 0;
+    font: 600 13px/40px var(--sans);
+    text-align: right;
+    display: flex;
+    justify-content: flex-end;
+    align-items: baseline;
+    gap: 6px;
+    border-top: 1px solid var(--rule);
+  }
+
+  #ds-body :global(dl > dt:first-of-type),
+  #ds-body :global(dl > dd:first-of-type) {
+    border-top: 0;
+  }
+
+  #ds-body :global(.mono) { font-family: var(--mono); }
+  #ds-body :global(.tz) { font: 400 11px/40px var(--sans); color: var(--ink3); }
+  /* 출처 줄은 남긴다 — 이 사이트는 공식 CFP를 대체하지 않는다 (BR-005). */
+  #ds-body :global(.source) {
+    margin: 12px 0 0;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    flex-wrap: wrap;
+    font: 400 12px/18px var(--sans);
+    color: var(--ink3);
+  }
+
+  #ds-body :global(.stamp) {
+    margin-left: auto;
+  }
+
+  .actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 20px;
+  }
+
+  #ds-save {
+    flex: 1;
+    height: 48px;
+    border-radius: 10px;
+    background: var(--brand);
+    border: 1px solid var(--brand);
+    color: #fff;
+    font: 600 14px/1 var(--sans);
+    cursor: pointer;
+  }
+
+  #ds-save[data-on] {
+    background: none;
+    color: var(--brand);
+  }
+
+  .ext {
+    flex: none;
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    color: var(--ink2);
+    font-size: 15px;
+    text-decoration: none;
+  }
+
+  .hint {
+    margin: 12px 0 0;
+    font: 400 12px/18px var(--sans);
+    color: var(--ink3);
+  }
+</style>

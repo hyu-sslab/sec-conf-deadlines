@@ -1,0 +1,78 @@
+---
+/** 하단 고정 탭. 조작은 하단, 정보는 상단 — 터치의 약 75%가 엄지다. */
+interface Props {
+  current: 'list' | 'year' | 'my';
+}
+
+const { current } = Astro.props;
+import { href } from '../lib/urls.ts';
+
+const tabs = [
+  { id: 'list', label: '목록', href: href() },
+  { id: 'year', label: '연간', href: href('year') },
+  { id: 'my', label: '내 마감', href: href('my') },
+] as const;
+---
+
+<nav class="tabs" aria-label="화면 전환">
+  {
+    tabs.map((tab) => (
+      <a
+        class="tab"
+        href={tab.href}
+        data-active={tab.id === current ? '' : undefined}
+        aria-current={tab.id === current ? 'page' : undefined}
+      >
+        {tab.label}
+        {tab.id === 'my' && <span class="count" data-saved-count hidden />}
+      </a>
+    ))
+  }
+</nav>
+
+<style>
+  .tabs {
+    flex: none;
+    position: relative;
+    z-index: 2;
+    transition: transform 0.18s ease, opacity 0.18s ease;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-top: 1px solid var(--rule);
+    background: var(--bg);
+    padding-bottom: env(safe-area-inset-bottom, 14px);
+  }
+
+  /* 스크롤하는 동안에는 물러나고, 멈추면 돌아온다. */
+  .tabs[data-hidden] {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+
+  .tab {
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    border-top: 2px solid transparent;
+    margin-top: -1px;
+    color: var(--ink3);
+    font: 400 13px/1 var(--sans);
+    text-decoration: none;
+  }
+
+  .tab[data-active] {
+    border-top-color: var(--brand);
+    color: var(--brand);
+    font-weight: 600;
+  }
+
+  .count {
+    font: 600 12px/1 var(--mono);
+  }
+
+  .count[hidden] {
+    display: none;
+  }
+</style>

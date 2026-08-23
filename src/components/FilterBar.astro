@@ -1,0 +1,152 @@
+---
+/**
+ * 필터 바. 기간 칩과 필터 버튼 둘만 상시 노출하고, 선택된 필터만 사이에
+ * 칩으로 쌓인다. 고를 수 있는 항목을 전부 늘어놓으면 상태가 아니라 메뉴가 된다.
+ */
+interface Props {
+  horizonMonths: number;
+}
+
+const { horizonMonths } = Astro.props;
+---
+
+<div class="bar">
+  <button class="range" type="button" data-open-filters>
+    <span data-range-label>{horizonMonths}개월</span>
+    <span class="caret" aria-hidden="true">▾</span>
+  </button>
+
+  <span class="divider" aria-hidden="true"></span>
+
+  <div class="active nx-scroll" data-active-filters aria-live="polite"></div>
+
+  <button class="more" type="button" data-open-filters aria-label="필터 열기">
+    <svg
+      class="icon"
+      viewBox="0 0 20 20"
+      width="18"
+      height="18"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.7"
+      stroke-linecap="round"
+      aria-hidden="true"
+    >
+      <path d="M3 6h14M6 10.5h8M8.5 15h3" />
+    </svg>
+    <span class="count" data-filter-count hidden></span>
+  </button>
+</div>
+
+<style>
+  .bar {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--rule);
+    padding: 6px 8px 6px 12px;
+  }
+
+  .range {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    height: 32px;
+    padding: 0 11px;
+    border: 1px solid var(--brand);
+    border-radius: 999px;
+    background: var(--chip);
+    color: var(--brand);
+    font: 500 13px/18px var(--sans);
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  .caret {
+    font-size: 9px;
+    color: var(--ink2);
+  }
+
+  .divider {
+    flex: none;
+    width: 1px;
+    height: 20px;
+    background: var(--rule);
+  }
+
+  /* 선택된 필터만 여기 쌓인다. 비어 있는 것이 기본 상태다. */
+  .active {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+  }
+
+  .active:empty {
+    flex: 1;
+  }
+
+  .active :global(button) {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    height: 32px;
+    padding: 0 8px 0 12px;
+    border: 1px solid var(--brand);
+    border-radius: 999px;
+    background: var(--brand-soft);
+    color: var(--brand);
+    font: 600 13px/18px var(--sans);
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  .active :global(button span) {
+    font-size: 14px;
+    line-height: 1;
+    opacity: 0.7;
+  }
+
+  /* 44×44 터치 타겟 (NFR-005) */
+  .more {
+    flex: none;
+    position: relative;
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    background: none;
+    border: 0;
+    color: var(--ink2);
+    cursor: pointer;
+  }
+
+  /* 필터가 걸려 있으면 아이콘도 브랜드색으로 바뀐다 */
+  .more:has(.count:not([hidden])) {
+    color: var(--brand);
+  }
+
+  .count {
+    position: absolute;
+    top: 4px;
+    right: 2px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    display: grid;
+    place-items: center;
+    background: var(--brand);
+    border-radius: 999px;
+    color: #fff;
+    font: 600 10px/1 var(--mono);
+  }
+
+  .count[hidden] {
+    display: none;
+  }
+</style>

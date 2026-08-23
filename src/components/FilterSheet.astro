@@ -1,0 +1,237 @@
+---
+/**
+ * 필터 시트. 하단 시트로 연다 — 상단 드롭다운은 엄지 영역 밖이다.
+ * ICORE와 교내는 서로 다른 것을 재는 축이라 줄을 나눴다.
+ */
+interface Topic {
+  id: string;
+  label: string;
+  short: string;
+}
+
+interface Props {
+  topics: Topic[];
+  horizonMonths: number;
+}
+
+const { topics, horizonMonths } = Astro.props;
+
+const RANGES = [3, 6, 12];
+const ICORE = ['A*', 'A', 'B', 'C'];
+const INTERNAL = ['A', 'B', 'C', 'D'];
+---
+
+<dialog class="sheet" id="filter-sheet" aria-label="필터" tabindex="-1">
+  <div class="handle" aria-hidden="true"></div>
+
+  <div class="grid">
+    <span class="key">기간</span>
+    <div class="row">
+      {
+        RANGES.map((months) => (
+          <button
+            class="chip"
+            type="button"
+            data-range={months}
+            data-on={months === horizonMonths ? '' : undefined}
+          >
+            {months}개월
+          </button>
+        ))
+      }
+    </div>
+
+    <span class="key">ICORE</span>
+    <div class="row">
+      {
+        ICORE.map((rank) => (
+          <button
+            class="chip"
+            type="button"
+            data-chip
+            data-kind="icore"
+            data-value={rank}
+            data-short={`ICORE ${rank}`}
+          >
+            {rank}
+          </button>
+        ))
+      }
+    </div>
+
+    <span class="key">교내</span>
+    <div class="row">
+      {
+        INTERNAL.map((grade) => (
+          <button
+            class="chip"
+            type="button"
+            data-chip
+            data-kind="grade"
+            data-value={grade}
+            data-short={`교내 ${grade}`}
+          >
+            {grade}등급
+          </button>
+        ))
+      }
+    </div>
+
+    <span class="key">분야</span>
+    <div class="row">
+      {
+        topics.map((topic) => (
+          <button
+            class="chip"
+            type="button"
+            data-chip
+            data-kind="topic"
+            data-value={topic.id}
+            data-short={topic.short}
+          >
+            {topic.label}
+          </button>
+        ))
+      }
+    </div>
+
+    <span class="key">상태</span>
+    <button class="switch-row" type="button" id="toggle-past" aria-pressed="true">
+      지난 마감 숨기기
+      <span class="switch" aria-hidden="true"><span class="knob"></span></span>
+    </button>
+
+    <label class="key" for="filter-search">검색</label>
+    <input id="filter-search" type="search" placeholder="학회명" autocomplete="off" />
+  </div>
+
+  <div class="actions">
+    <button type="button" id="filter-reset">초기화</button>
+    <button type="button" id="filter-apply">적용 · <span data-visible-count>0</span>건</button>
+  </div>
+</dialog>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    column-gap: 12px;
+    row-gap: 16px;
+    align-items: start;
+  }
+
+  .key {
+    font: 600 11px/32px var(--sans);
+    letter-spacing: 0.09em;
+    color: var(--ink3);
+  }
+
+  .row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .chip {
+    flex: none;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    background: none;
+    color: var(--ink2);
+    font: 400 13px/18px var(--sans);
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  .chip[data-on] {
+    border-color: var(--brand);
+    background: var(--brand-soft);
+    color: var(--brand);
+    font-weight: 600;
+  }
+
+  .switch-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 32px;
+    padding: 0;
+    background: none;
+    border: 0;
+    color: var(--ink);
+    font: 400 13px/18px var(--sans);
+    cursor: pointer;
+  }
+
+  .switch {
+    position: relative;
+    width: 42px;
+    height: 24px;
+    border-radius: 999px;
+    background: var(--rule);
+  }
+
+  .switch-row[aria-pressed='true'] .switch {
+    background: var(--brand);
+  }
+
+  .knob {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    background: var(--bg);
+    transition: left 0.16s ease;
+  }
+
+  .switch-row[aria-pressed='true'] .knob {
+    left: 21px;
+  }
+
+  #filter-search {
+    height: 40px;
+    width: 100%;
+    padding: 0 12px;
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    color: var(--ink);
+    font: 400 13px/18px var(--sans);
+    outline: none;
+  }
+
+  .actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 22px;
+  }
+
+  #filter-reset {
+    flex: 1;
+    height: 48px;
+    background: none;
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    color: var(--ink2);
+    font: 500 13px/18px var(--sans);
+    cursor: pointer;
+  }
+
+  #filter-apply {
+    flex: 2;
+    height: 48px;
+    background: var(--brand);
+    border: 1px solid var(--brand);
+    border-radius: 10px;
+    color: #fff;
+    font: 600 13px/18px var(--sans);
+    cursor: pointer;
+  }
+</style>

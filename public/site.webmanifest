@@ -1,0 +1,15 @@
+{
+  "name": "Security & Software Engineering Conference Deadlines",
+  "short_name": "SecSE Deadlines",
+  "description": "보안·소프트웨어공학 국제 학회의 마감과 통보 일정",
+  "lang": "ko",
+  "start_url": "/sec-conf-deadlines/",
+  "scope": "/sec-conf-deadlines/",
+  "display": "standalone",
+  "theme_color": "#0E4A84",
+  "background_color": "#FCFDFE",
+  "icons": [
+    { "src": "/sec-conf-deadlines/android-chrome-192x192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/sec-conf-deadlines/android-chrome-512x512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

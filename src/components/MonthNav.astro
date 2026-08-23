@@ -1,0 +1,134 @@
+---
+/**
+ * 월 네비게이터 (FR-018). 앵커 링크라 JS 없이 동작한다 — 클릭은 '필터'가
+ * 아니라 '점프'다. 0건인 월도 자리를 지켜 시간 축의 연속성을 보존한다.
+ */
+interface MonthCell {
+  key: string;
+  label: string;
+  count: number;
+  /** 기본 탐색 범위 안인가. 밖이면 렌더링은 하되 감춰 둔다. */
+  inDefault: boolean;
+}
+
+interface Props {
+  months: MonthCell[];
+  activeKey: string | null;
+}
+
+const { months, activeKey } = Astro.props;
+const max = Math.max(1, ...months.filter((m) => m.inDefault).map((m) => m.count));
+
+/** 밀도는 4단계로 정규화한다. 절대값 비교가 아니라 군집 인지가 목적이다. */
+const levelOf = (count: number) => (count === 0 ? 0 : Math.ceil((count / max) * 4));
+---
+
+<nav class="nav nx-scroll" aria-label="월별 마감 건수">
+  {
+    months.map((month) => {
+      const level = levelOf(month.count);
+      const active = month.key === activeKey;
+      const Tag = month.count === 0 ? 'span' : 'a';
+      return (
+        <Tag
+          class="cell"
+          data-month={month.key}
+          hidden={month.inDefault ? undefined : true}
+          data-active={active ? '' : undefined}
+          data-empty={month.count === 0 ? '' : undefined}
+          {...(month.count === 0 ? {} : { href: `#month-${month.key}` })}
+          aria-current={active ? 'true' : undefined}
+        >
+          <span class="label">{month.label}</span>
+          <span class="count" data-count>{month.count}</span>
+          <span class="barbox">
+            <span class="bar" data-bar style={`height:${level * 6}px`} />
+          </span>
+        </Tag>
+      );
+    })
+  }
+</nav>
+
+<style>
+  .nav {
+    flex: none;
+    display: flex;
+    gap: 2px;
+    overflow-x: auto;
+    padding: 14px 12px 0;
+  }
+
+  .cell {
+    flex: none;
+    width: 50px;
+    height: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 5px;
+    padding: 0 0 6px;
+    border-bottom: 2px solid transparent;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .cell[data-active] {
+    border-bottom-color: var(--ink);
+  }
+
+  .cell[data-empty] {
+    opacity: 0.55;
+    cursor: default;
+    pointer-events: none;
+  }
+
+  /* 기간 필터 밖의 달은 렌더링하지 않는다 (요구사항 6.4) */
+  .cell[hidden] {
+    display: none;
+  }
+
+  .label {
+    font: 400 13px/18px var(--sans);
+    color: var(--ink2);
+  }
+
+  .cell[data-active] .label {
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .count {
+    font: 600 17px/22px var(--mono);
+    letter-spacing: -0.03em;
+    color: var(--ink2);
+  }
+
+  .cell[data-active] .count {
+    color: var(--ink);
+  }
+
+  .cell[data-empty] .count {
+    color: var(--ink3);
+  }
+
+  .barbox {
+    display: flex;
+    align-items: flex-end;
+    height: 26px;
+  }
+
+  /* 밀도 막대는 무채색으로 남긴다 — 색은 D-day가 독점한다. */
+  .bar {
+    display: block;
+    width: 20px;
+    background: var(--bar);
+    border-radius: 2px;
+  }
+
+  .cell[data-active] .bar {
+    background: var(--brand);
+  }
+</style>

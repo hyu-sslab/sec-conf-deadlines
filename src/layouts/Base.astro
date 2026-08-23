@@ -1,0 +1,641 @@
+---
+import '../styles/tokens.css';
+import '../styles/global.css';
+import '../styles/dialog.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const SITE = 'Security & Software Engineering Conference Deadlines';
+
+const {
+  title = SITE,
+  description = '보안·소프트웨어공학 국제 학회의 마감과 통보 일정을 한 화면에서 확인한다.',
+} = Astro.props;
+
+import { href } from '../lib/urls.ts';
+---
+
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href={href('favicon.ico')} sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href={href('favicon-32x32.png')} />
+    <link rel="icon" type="image/png" sizes="16x16" href={href('favicon-16x16.png')} />
+    <link rel="apple-touch-icon" href={href('apple-touch-icon.png')} />
+    <link rel="manifest" href={href('site.webmanifest')} />
+    <meta name="theme-color" content="#0E4A84" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+
+    {/* 저장된 테마를 페인트 전에 적용한다. 나중에 붙이면 화면이 한 번 번쩍인다. */}
+    <script is:inline>
+      document.documentElement.dataset.js = '';
+      try {
+        const saved = localStorage.getItem('nx-theme');
+        if (saved === 'dark' || saved === 'light') {
+          document.documentElement.dataset.theme = saved;
+        }
+      } catch {}
+    </script>
+  </head>
+
+  <body>
+    <div class="app">
+      <slot />
+    </div>
+
+    <script>
+      import {
+        DEFAULT_HORIZON_MONTHS,
+        RELAXED_TIER,
+        TOAST_MS,
+        urgencyTier,
+      } from '../lib/config.ts';
+
+      const root = document.documentElement;
+      const SAVED_KEY = 'nx-saved';
+      const THEME_KEY = 'nx-theme';
+
+      const read = <T,>(key: string, fallback: T): T => {
+        try {
+          const raw = localStorage.getItem(key);
+          return raw === null ? fallback : (JSON.parse(raw) as T);
+        } catch {
+          return fallback;
+        }
+      };
+      const write = (key: string, value: unknown) => {
+        try {
+          localStorage.setItem(key, JSON.stringify(value));
+        } catch {}
+      };
+
+      /* ---------- 테마 ---------- */
+      document.getElementById('theme-toggle')?.addEventListener('click', () => {
+        const prefersDark = matchMedia('(prefers-color-scheme: dark)').matches;
+        const current = root.dataset.theme ?? (prefersDark ? 'dark' : 'light');
+        const next = current === 'dark' ? 'light' : 'dark';
+        root.dataset.theme = next;
+        try {
+          localStorage.setItem(THEME_KEY, next);
+        } catch {}
+      });
+
+      /* ---------- 토스트 ---------- */
+      const toastEl = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-msg');
+      let toastTimer: ReturnType<typeof setTimeout> | undefined;
+      const flash = (message: string) => {
+        if (!toastEl || !toastMsg) return;
+        clearTimeout(toastTimer);
+        toastMsg.textContent = message;
+        toastEl.hidden = true;
+        void toastEl.offsetWidth; // 애니메이션 재시작
+        toastEl.hidden = false;
+        toastTimer = setTimeout(() => (toastEl.hidden = true), TOAST_MS);
+      };
+
+      /* ---------- 저장 목록 ---------- */
+      const rowOf = (key: string) =>
+        document.querySelector<HTMLElement>(`[data-key="${CSS.escape(key)}"]`);
+
+      const paint = () => {
+        const saved = read<string[]>(SAVED_KEY, []);
+        for (const button of document.querySelectorAll<HTMLElement>('[data-save]')) {
+          const on = saved.includes(button.dataset.save!);
+          button.hidden = false;
+          button.toggleAttribute('data-on', on);
+          button.setAttribute('aria-pressed', String(on));
+          // 내 마감의 '제거' 버튼은 글자를 가진 버튼이라 아이콘으로 덮지 않는다.
+          if (!button.hasAttribute('data-remove')) {
+            button.textContent = on ? '★' : '＋';
+          }
+        }
+        for (const badge of document.querySelectorAll<HTMLElement>('[data-saved-count]')) {
+          badge.textContent = String(saved.length);
+          badge.hidden = saved.length === 0;
+        }
+
+        // 내 마감 화면: 저장된 행만 드러낸다.
+        const my = document.querySelector('[data-my]');
+        if (my) {
+          let shown = 0;
+          for (const row of my.querySelectorAll<HTMLElement>('[data-key]')) {
+            const on = saved.includes(row.dataset.key!);
+            row.toggleAttribute('data-saved', on);
+            if (on) shown += 1;
+          }
+          const head = my.querySelector<HTMLElement>('[data-saved-head]');
+          const hint = my.querySelector<HTMLElement>('[data-saved-hint]');
+          const empty = my.querySelector<HTMLElement>('[data-empty]');
+          const count = my.querySelector<HTMLElement>('[data-saved-count-text]');
+          if (count) count.textContent = String(shown);
+          if (head) head.hidden = shown === 0;
+          if (hint) hint.hidden = shown === 0;
+          if (empty) empty.hidden = shown > 0;
+        }
+      };
+
+      const toggleSave = (key: string) => {
+        const saved = read<string[]>(SAVED_KEY, []);
+        const on = saved.includes(key);
+        write(SAVED_KEY, on ? saved.filter((k) => k !== key) : [...saved, key]);
+        paint();
+        const name = rowOf(key)?.querySelector('[data-title]')?.textContent?.trim() ?? '';
+        flash(on ? `${name} 제거` : `${name} 추가`);
+      };
+
+      document.addEventListener('click', (event) => {
+        const button = (event.target as HTMLElement)?.closest<HTMLElement>('[data-save]');
+        if (!button) return;
+        event.preventDefault();
+        event.stopPropagation();
+        toggleSave(button.dataset.save!);
+      });
+
+      paint();
+
+      /* ---------- 캘린더에 추가 ---------- */
+      const calSheet = document.getElementById('cal-sheet') as HTMLDialogElement | null;
+      if (calSheet) {
+        /*
+         * 애플에는 일정을 넣는 URL이 없어 .ics를 여는 것이 유일한 경로다.
+         * 애플 기기에서는 캘린더가 열리지만 그 밖에서는 파일이 내려받아진다 —
+         * 무슨 일이 일어나는지 버튼이 말하게 한다.
+         */
+        const onApple = /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent);
+        const appleLabel = calSheet.querySelector<HTMLElement>('[data-apple-label]');
+        const appleLink = calSheet.querySelector<HTMLAnchorElement>('[data-pick-apple]');
+        if (!onApple) {
+          if (appleLabel) appleLabel.textContent = '일정 파일(.ics) 받기';
+          appleLink?.setAttribute('download', '');
+        }
+
+        const pick = (name: string) =>
+          calSheet.querySelector<HTMLAnchorElement>(`[data-pick-${name}]`);
+        document.addEventListener('click', (event) => {
+          const button = (event.target as HTMLElement)?.closest<HTMLElement>('[data-add-cal]');
+          if (!button) return;
+
+          const google = pick('google');
+          const apple = pick('apple');
+          if (google) google.href = button.dataset.calGoogle!;
+          // https로 준다. webcal://은 "구독"이라 일정 하나가 아니라 캘린더가 통째로 붙는다.
+          if (apple) apple.href = button.dataset.calIcs!;
+
+          calSheet.showModal();
+          calSheet.focus();
+        });
+
+        calSheet.addEventListener('click', (event) => {
+          if (event.target === calSheet) calSheet.close();
+        });
+        calSheet
+          .querySelector('[data-close-cal]')
+          ?.addEventListener('click', () => calSheet.close());
+      }
+
+      /* ---------- 상세 시트 ---------- */
+      const detail = document.getElementById('detail-sheet') as HTMLDialogElement | null;
+      if (detail) {
+        const nameEl = document.getElementById('ds-name')!;
+        const badgesEl = document.getElementById('ds-badges')!;
+        const ddayEl = document.getElementById('ds-dday')!;
+        const bodyEl = document.getElementById('ds-body')!;
+        const saveEl = document.getElementById('ds-save')!;
+        const cfpEl = document.getElementById('ds-cfp') as HTMLAnchorElement;
+        const warnEl = document.getElementById('ds-warn')!;
+        const hintEl = document.getElementById('ds-hint')!;
+        let openKey = '';
+        let openEstimated = false;
+
+        const openDetail = (row: HTMLElement) => {
+          openKey = row.dataset.key!;
+          const card = row.querySelector('[data-card]')!;
+          nameEl.textContent = card.querySelector('[data-title]')?.textContent ?? '';
+
+          badgesEl.replaceChildren();
+          const add = (cls: string, text: string) => {
+            if (!text) return;
+            const span = document.createElement('span');
+            span.className = cls;
+            span.textContent = text;
+            badgesEl.append(span);
+          };
+          add('badge', row.dataset.icore ? `ICORE ${row.dataset.icore}` : '');
+          add('badge', row.dataset.grade ? `교내 ${row.dataset.grade}` : '');
+
+          // 추정 에디션은 확정된 마감과 같은 무게로 보여주지 않는다 (BR-004).
+          openEstimated = row.hasAttribute('data-estimated');
+          const dday = row.dataset.dday;
+          ddayEl.textContent = openEstimated ? '예상' : `D-${dday}`;
+          ddayEl.toggleAttribute('data-estimated', openEstimated);
+          const n = Number(dday);
+          ddayEl.dataset.tier = String(openEstimated ? RELAXED_TIER : urgencyTier(n));
+          warnEl.hidden = !openEstimated;
+
+          const tpl = card.querySelector<HTMLTemplateElement>('[data-detail]');
+          bodyEl.replaceChildren(
+            tpl ? tpl.content.cloneNode(true) : document.createTextNode(''),
+          );
+
+          cfpEl.href = row.dataset.source ?? '#';
+
+          // 추정 에디션은 저장할 날짜가 없다. 경고만 남기고 동작을 두지 않는다.
+          saveEl.hidden = openEstimated;
+          hintEl.hidden = openEstimated;
+          if (!openEstimated) {
+            const saved = read<string[]>(SAVED_KEY, []).includes(openKey);
+            saveEl.textContent = saved ? '내 마감에서 제거' : '내 마감에 추가';
+            saveEl.toggleAttribute('data-on', saved);
+            hintEl.textContent = '이 기기에 저장됩니다.';
+          }
+          detail.showModal();
+          detail.focus();
+        };
+
+        saveEl.addEventListener('click', () => {
+          toggleSave(openKey);
+          const saved = read<string[]>(SAVED_KEY, []).includes(openKey);
+          saveEl.textContent = saved ? '내 마감에서 제거' : '내 마감에 추가';
+          saveEl.toggleAttribute('data-on', saved);
+        });
+
+        // 배경 클릭으로 닫기
+        detail.addEventListener('click', (event) => {
+          if (event.target === detail) detail.close();
+        });
+
+        for (const card of document.querySelectorAll<HTMLElement>('[data-card]')) {
+          card.dataset.interactive = '';
+          card.addEventListener('click', (event) => {
+            if ((event.target as HTMLElement).closest('a, button')) return;
+            openDetail(card.closest('[data-key]') as HTMLElement);
+          });
+        }
+      }
+
+      /* ---------- 스크롤 중에는 탭바를 물린다 ---------- */
+      const tabs = document.querySelector<HTMLElement>('.tabs');
+      const scroller = document.querySelector<HTMLElement>('[data-scroll]');
+      if (tabs && scroller) {
+        let idle: ReturnType<typeof setTimeout> | undefined;
+        scroller.addEventListener(
+          'scroll',
+          () => {
+            tabs.setAttribute('data-hidden', '');
+            clearTimeout(idle);
+            idle = setTimeout(() => tabs.removeAttribute('data-hidden'), 200);
+          },
+          { passive: true },
+        );
+      }
+
+      /* ---------- 필터 ---------- */
+      const list = document.querySelector('[data-list]');
+      const filterSheet = document.getElementById('filter-sheet') as HTMLDialogElement | null;
+
+      if (list) {
+        const state = {
+          // 기본은 렌더링된 전체 범위다. 아무것도 안 걸린 상태로 시작한다.
+          range: DEFAULT_HORIZON_MONTHS,
+          icore: new Set<string>(),
+          grade: new Set<string>(),
+          topic: new Set<string>(),
+          q: '',
+        };
+
+        const params = new URLSearchParams(location.search);
+        state.range = Number(params.get('m')) || DEFAULT_HORIZON_MONTHS;
+        for (const kind of ['icore', 'grade', 'topic'] as const) {
+          for (const value of (params.get(kind) ?? '').split(',').filter(Boolean)) {
+            state[kind].add(value);
+          }
+        }
+        state.q = params.get('q') ?? '';
+
+        const monthsInRange = () => {
+          const now = new Date();
+          const keys = new Set<string>();
+          for (let i = 0; i < state.range; i += 1) {
+            const d = new Date(Date.UTC(now.getFullYear(), now.getMonth() + i, 1));
+            keys.add(`${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`);
+          }
+          return keys;
+        };
+
+        const apply = () => {
+          const allowed = monthsInRange();
+          const q = state.q.trim().toLowerCase();
+          let visible = 0;
+
+          for (const section of list.querySelectorAll<HTMLElement>('[data-section]')) {
+            let count = 0;
+            for (const row of section.querySelectorAll<HTMLElement>('[data-key]')) {
+              const topics = (row.dataset.topics ?? '').split(' ');
+              const ok =
+                allowed.has(row.dataset.month ?? '') &&
+                (state.icore.size === 0 || state.icore.has(row.dataset.icore ?? '')) &&
+                (state.grade.size === 0 || state.grade.has(row.dataset.grade ?? '')) &&
+                (state.topic.size === 0 || topics.some((t) => state.topic.has(t))) &&
+                (q === '' || (row.dataset.name ?? '').includes(q));
+              row.hidden = !ok;
+              if (ok) count += 1;
+            }
+            section.hidden = count === 0;
+            const label = section.querySelector('[data-section-count]');
+            if (label) label.textContent = String(count);
+            visible += count;
+          }
+
+          for (const el of document.querySelectorAll('[data-visible-count]')) {
+            el.textContent = String(visible);
+          }
+
+          // 월 네비게이터도 필터 결과를 따라간다. 건수만 바뀌고 막대는
+          // 남은 항목 기준으로 다시 정규화한다 — 절대값이 아니라 군집
+          // 인지가 목적이므로 4단계면 충분하다 (요구사항 6.4).
+          const cells = [...document.querySelectorAll<HTMLElement>('.cell[data-month]')];
+          const counts = new Map<string, number>();
+          for (const section of list.querySelectorAll<HTMLElement>('[data-section]')) {
+            const key = section.dataset.section!;
+            const n = [...section.querySelectorAll<HTMLElement>('[data-key]')].filter(
+              (row) => !row.hidden,
+            ).length;
+            counts.set(key, n);
+          }
+          const peak = Math.max(1, ...[...counts.values()]);
+          for (const cell of cells) {
+            const key = cell.dataset.month!;
+            const inRange = allowed.has(key);
+            cell.hidden = !inRange;
+            const n = counts.get(key) ?? 0;
+            cell.toggleAttribute('data-empty', n === 0);
+            const label = cell.querySelector<HTMLElement>('[data-count]');
+            if (label) label.textContent = String(n);
+            const bar = cell.querySelector<HTMLElement>('[data-bar]');
+            if (bar) bar.style.height = `${n === 0 ? 0 : Math.ceil((n / peak) * 4) * 6}px`;
+          }
+
+          const next = new URLSearchParams();
+          if (state.range !== DEFAULT_HORIZON_MONTHS) next.set('m', String(state.range));
+          for (const kind of ['icore', 'grade', 'topic'] as const) {
+            if (state[kind].size) next.set(kind, [...state[kind]].join(','));
+          }
+          if (q) next.set('q', q);
+          const qs = next.toString();
+          history.replaceState(null, '', qs ? `?${qs}` : location.pathname);
+        };
+
+        const syncChips = () => {
+          for (const chip of document.querySelectorAll<HTMLElement>('[data-chip]')) {
+            const kind = chip.dataset.kind as 'icore' | 'grade' | 'topic';
+            chip.toggleAttribute('data-on', state[kind].has(chip.dataset.value!));
+          }
+          for (const chip of document.querySelectorAll<HTMLElement>('[data-range]')) {
+            chip.toggleAttribute('data-on', Number(chip.dataset.range) === state.range);
+          }
+          for (const el of document.querySelectorAll('[data-range-label]')) {
+            el.textContent = `${state.range}개월`;
+          }
+
+          // 선택된 필터만 바에 칩으로 올린다. 눌러서 바로 끌 수 있다.
+          const tray = document.querySelector<HTMLElement>('[data-active-filters]');
+          const badge = document.querySelector<HTMLElement>('[data-filter-count]');
+          const active: Array<{ kind: 'icore' | 'grade' | 'topic'; value: string }> = [];
+          for (const kind of ['icore', 'grade', 'topic'] as const) {
+            for (const value of state[kind]) active.push({ kind, value });
+          }
+
+          if (badge) {
+            badge.textContent = String(active.length);
+            badge.hidden = active.length === 0;
+          }
+
+          if (tray) {
+            tray.replaceChildren();
+            for (const { kind, value } of active) {
+              const source = document.querySelector<HTMLElement>(
+                `#filter-sheet [data-chip][data-kind="${kind}"][data-value="${CSS.escape(value)}"]`,
+              );
+              const chip = document.createElement('button');
+              chip.type = 'button';
+              chip.dataset.chip = '';
+              chip.dataset.kind = kind;
+              chip.dataset.value = value;
+              chip.append(source?.dataset.short ?? value);
+              const x = document.createElement('span');
+              x.textContent = '×';
+              x.setAttribute('aria-hidden', 'true');
+              chip.append(x);
+              chip.setAttribute('aria-label', `${source?.dataset.short ?? value} 필터 끄기`);
+              tray.append(chip);
+            }
+          }
+        };
+
+        document.addEventListener('click', (event) => {
+          const chip = (event.target as HTMLElement)?.closest<HTMLElement>('[data-chip]');
+          if (chip) {
+            const kind = chip.dataset.kind as 'icore' | 'grade' | 'topic';
+            const value = chip.dataset.value!;
+            state[kind].has(value) ? state[kind].delete(value) : state[kind].add(value);
+            syncChips();
+            apply();
+            return;
+          }
+          const range = (event.target as HTMLElement)?.closest<HTMLElement>('[data-range]');
+          if (range) {
+            state.range = Number(range.dataset.range);
+            syncChips();
+            apply();
+          }
+        });
+
+        document.getElementById('filter-search')?.addEventListener('input', (event) => {
+          state.q = (event.target as HTMLInputElement).value;
+          apply();
+        });
+
+        document.getElementById('filter-reset')?.addEventListener('click', () => {
+          state.range = DEFAULT_HORIZON_MONTHS;
+          state.icore.clear();
+          state.grade.clear();
+          state.topic.clear();
+          state.q = '';
+          const search = document.getElementById('filter-search') as HTMLInputElement | null;
+          if (search) search.value = '';
+          syncChips();
+          apply();
+        });
+
+        const searchInput = document.getElementById('filter-search') as HTMLInputElement | null;
+        if (searchInput) searchInput.value = state.q;
+        syncChips();
+        apply();
+      }
+
+      if (filterSheet) {
+        for (const opener of document.querySelectorAll('[data-open-filters]')) {
+          opener.addEventListener('click', () => {
+            filterSheet.showModal();
+            filterSheet.focus();
+          });
+        }
+        document.getElementById('filter-apply')?.addEventListener('click', () => filterSheet.close());
+        filterSheet.addEventListener('click', (event) => {
+          if (event.target === filterSheet) filterSheet.close();
+        });
+
+        const pastToggle = document.getElementById('toggle-past');
+        pastToggle?.addEventListener('click', () => {
+          const on = pastToggle.getAttribute('aria-pressed') === 'true';
+          pastToggle.setAttribute('aria-pressed', String(!on));
+          const past = document.querySelector<HTMLDetailsElement>('details.past');
+          if (past) past.open = on; // 숨기기를 끄면 펼친다
+        });
+      }
+
+      /* ---------- 카운트다운 (내 마감) ---------- */
+      const clocks = [...document.querySelectorAll<HTMLElement>('[data-countdown]')];
+      if (clocks.length) {
+        const pad = (n: number) => String(n).padStart(2, '0');
+        const put = (card: HTMLElement, key: string, value: string) => {
+          const el = card.querySelector<HTMLElement>(`[data-${key}]`);
+          if (el) el.textContent = value;
+        };
+
+        const tick = () => {
+          const now = Date.now();
+          for (const card of clocks) {
+            const left = Date.parse(card.dataset.countdown!) - now;
+            const clock = card.querySelector<HTMLElement>('.clock');
+            const closed = card.querySelector<HTMLElement>('[data-closed]');
+            if (!clock || !closed) continue;
+
+            if (left <= 0) {
+              clock.hidden = true;
+              closed.hidden = false;
+              continue;
+            }
+            clock.hidden = false;
+            closed.hidden = true;
+
+            const days = Math.floor(left / 86_400_000);
+            const hours = Math.floor((left % 86_400_000) / 3_600_000);
+            const minutes = Math.floor((left % 3_600_000) / 60_000);
+            const seconds = Math.floor((left % 60_000) / 1000);
+
+            put(card, 'days', String(days));
+            put(card, 'hours', pad(hours));
+            put(card, 'minutes', pad(minutes));
+            put(card, 'seconds', pad(seconds));
+
+            const dayLeft = Math.ceil(left / 86_400_000);
+            clock.dataset.tier = String(urgencyTier(dayLeft));
+          }
+        };
+
+        tick();
+        setInterval(tick, 1000);
+      }
+
+      /* ---------- 월 네비게이터 점프 ---------- */
+      // 앵커 기본 동작은 스크롤 컨테이너를 찾아 움직이지만, 활성 표시는
+      // 우리가 옮겨야 한다.
+      for (const cell of document.querySelectorAll<HTMLElement>('.cell[data-month][href]')) {
+        cell.addEventListener('click', () => {
+          for (const other of document.querySelectorAll('.cell[data-month]')) {
+            other.removeAttribute('data-active');
+            other.removeAttribute('aria-current');
+          }
+          cell.setAttribute('data-active', '');
+          cell.setAttribute('aria-current', 'true');
+        });
+      }
+
+      /* ---------- 연간 달력 페이저 ---------- */
+      const pager = document.querySelector<HTMLElement>('[data-pager]');
+      const monthSections = [...document.querySelectorAll<HTMLElement>('.month[data-month]')];
+
+      if (pager && monthSections.length > 0) {
+        const label = pager.querySelector<HTMLElement>('[data-pager-label]')!;
+        const prev = pager.querySelector<HTMLButtonElement>('[data-prev]')!;
+        const next = pager.querySelector<HTMLButtonElement>('[data-next]')!;
+        const scroller = document.querySelector<HTMLElement>('[data-scroll]');
+
+        // 오늘이 속한 달에서 시작한다. 없으면 그 다음으로 가까운 달.
+        const todayKey = new Intl.DateTimeFormat('en-CA', {
+          timeZone: 'Asia/Seoul',
+          year: 'numeric',
+          month: '2-digit',
+        })
+          .format(new Date())
+          .slice(0, 7);
+        let index = monthSections.findIndex((s) => s.dataset.month! >= todayKey);
+        if (index < 0) index = monthSections.length - 1;
+
+
+        const show = (to: number, scroll = false) => {
+          index = Math.max(0, Math.min(monthSections.length - 1, to));
+          for (const [i, section] of monthSections.entries()) {
+            section.toggleAttribute('data-current', i === index);
+          }
+          label.textContent = monthSections[index].dataset.label ?? '';
+          prev.disabled = index === 0;
+          next.disabled = index === monthSections.length - 1;
+          if (scroll && scroller) scroller.scrollTop = 0;
+        };
+
+        prev.addEventListener('click', () => show(index - 1, true));
+        next.addEventListener('click', () => show(index + 1, true));
+
+        // 모바일에서는 넘기는 동작이 버튼보다 빠르다.
+        let startX = 0;
+        let startY = 0;
+        scroller?.addEventListener(
+          'touchstart',
+          (event) => {
+            startX = event.changedTouches[0].clientX;
+            startY = event.changedTouches[0].clientY;
+          },
+          { passive: true },
+        );
+        scroller?.addEventListener(
+          'touchend',
+          (event) => {
+            const dx = event.changedTouches[0].clientX - startX;
+            const dy = event.changedTouches[0].clientY - startY;
+            // 세로 스크롤과 겹치지 않도록 가로 이동이 확실할 때만 넘긴다.
+            if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+            show(index + (dx < 0 ? 1 : -1), true);
+          },
+          { passive: true },
+        );
+
+        pager.hidden = false;
+        show(index);
+      }
+
+    </script>
+  </body>
+</html>

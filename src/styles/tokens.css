@@ -1,0 +1,109 @@
+/*
+ * 디자인 토큰 — Claude Design 산출물(nextCFP / CFPPhone)에서 그대로 옮겼다.
+ * 값을 여기서 새로 만들지 않는다. 디자인이 바뀌면 이 파일만 교체한다.
+ */
+:root {
+  color-scheme: light dark;
+
+  --sans: "IBM Plex Sans", "Pretendard", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", "Pretendard", ui-monospace, monospace;
+
+  --brand: #0E4A84;
+  --brand-soft: #EAF1F9;
+
+  --bg: #FCFDFE;
+  --card: #F2F6FB;
+  --ink: #25384C;
+  --ink2: #5A6C7E;
+  --ink3: #6B7C8E;
+
+  --rule: #E6ECF3;
+  /* 모달처럼 떠 있는 면. 페이지·카드보다 위에 있음을 색으로 알린다. */
+  --pop: #FFFFFF;
+  --bar: #CBD6E2;
+  --bar-on: #2C5F94;
+  --chip: #FFFFFF;
+
+  /* 마감 임박 배너 */
+  --hot: #C4443A;
+  --hot-bg: #FDF2F0;
+
+  /*
+   * D-day 3단계 — 화면에서 색을 쓰는 유일한 자리다 (Von Restorff).
+   * 그래서 세 단계가 서로 확실히 갈려야 한다. 원래 값은 채도를 낮춰
+   * 카드 배경(#F2F6FB) 위에서 흐릿했다. 지금 값은 카드 위 대비비가
+   * 각각 4.6 / 5.5 / 7.1:1로 WCAG AA를 넘는다.
+   */
+  --u1: #D42017;  --u1bg: #FCE8E6;   /* 임박 ≤7일 · 색상각 3° */
+  --u2: #9C5A06;  --u2bg: #FAEFDC;   /* 준비 ≤45일 · 색상각 34° */
+  --u3: #0B62BC;  --u3bg: #E6EFFA;   /* 여유 · 색상각 211° */
+}
+
+/*
+ * 다크 모드 (NFR-010).
+ * 시스템 설정을 따르되, 사용자가 ☾로 명시 선택하면 그 선택이 이긴다.
+ */
+:root[data-theme="dark"],
+:root:not([data-theme="light"]) {
+  --dark-brand: #8FBCE8;
+  --dark-brand-soft: #1B2A3A;
+  --dark-bg: #151B23;
+  --dark-card: #1F2731;
+  --dark-ink: #EBEFF4;
+  --dark-ink2: #A8B3C1;
+  --dark-ink3: #7C8896;
+  --dark-rule: #2E3742;
+  --dark-pop: #273140;
+  --dark-bar: #44505E;
+  --dark-bar-on: #8FBCE8;
+  --dark-chip: #151B23;
+  --dark-hot: #FF8A7A;
+  --dark-hot-bg: #26150F;
+  /* 어두운 배경에서는 반대로 밝혀야 같은 만큼 또렷하다. */
+  --dark-u1: #FF6B5B;  --dark-u1bg: #2E1512;
+  --dark-u2: #F5B33C;  --dark-u2bg: #302413;
+  --dark-u3: #5FA8F5;  --dark-u3bg: #142433;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --brand: var(--dark-brand);
+    --brand-soft: var(--dark-brand-soft);
+    --bg: var(--dark-bg);
+    --card: var(--dark-card);
+    --ink: var(--dark-ink);
+    --ink2: var(--dark-ink2);
+    --ink3: var(--dark-ink3);
+    --rule: var(--dark-rule);
+  --pop: var(--dark-pop);
+    --pop: var(--dark-pop);
+    --bar: var(--dark-bar);
+    --bar-on: var(--dark-bar-on);
+    --chip: var(--dark-chip);
+    --hot: var(--dark-hot);
+    --hot-bg: var(--dark-hot-bg);
+    --u1: var(--dark-u1);  --u1bg: var(--dark-u1bg);
+    --u2: var(--dark-u2);  --u2bg: var(--dark-u2bg);
+    --u3: var(--dark-u3);  --u3bg: var(--dark-u3bg);
+  }
+}
+
+/* 명시 선택은 시스템 설정을 덮는다 — 양방향 모두. */
+:root[data-theme="dark"] {
+  --brand: var(--dark-brand);
+  --brand-soft: var(--dark-brand-soft);
+  --bg: var(--dark-bg);
+  --card: var(--dark-card);
+  --ink: var(--dark-ink);
+  --ink2: var(--dark-ink2);
+  --ink3: var(--dark-ink3);
+  --rule: var(--dark-rule);
+  --bar: var(--dark-bar);
+  --bar-on: var(--dark-bar-on);
+  --chip: var(--dark-chip);
+  --hot: var(--dark-hot);
+  --hot-bg: var(--dark-hot-bg);
+  --u1: var(--dark-u1);  --u1bg: var(--dark-u1bg);
+  --u2: var(--dark-u2);  --u2bg: var(--dark-u2bg);
+  --u3: var(--dark-u3);  --u3bg: var(--dark-u3bg);
+}

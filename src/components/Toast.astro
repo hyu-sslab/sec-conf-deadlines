@@ -1,0 +1,51 @@
+---
+/** 저장 피드백 (요구사항 6.9). 2.4초 뒤 스스로 사라진다. */
+import { href } from '../lib/urls.ts';
+---
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden>
+  <span id="toast-msg"></span>
+  <span class="spacer"></span>
+  <a href={href("my")}>보기</a>
+</div>
+
+<style>
+  .toast {
+    position: fixed;
+    left: 16px;
+    right: 16px;
+    bottom: 78px;
+    z-index: 30;
+    max-width: 448px;
+    margin-inline: auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: var(--brand);
+    color: #fff;
+    font: 500 13px/18px var(--sans);
+    animation: nxtoast 2.4s ease both;
+  }
+
+  .toast[hidden] {
+    display: none;
+  }
+
+  .spacer {
+    flex: 1;
+  }
+
+  .toast a {
+    color: #fff;
+    font-weight: 600;
+    text-decoration: underline;
+  }
+
+  @keyframes nxtoast {
+    0% { opacity: 0; transform: translateY(10px); }
+    12%, 88% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(6px); }
+  }
+</style>

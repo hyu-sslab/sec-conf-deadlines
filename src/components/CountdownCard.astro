@@ -1,0 +1,285 @@
+---
+/**
+ * 내 마감 전용 카드. 목록과 일부러 다르게 만든다 — 여기 있는 학회는 이미
+ * 내기로 정한 것이라 남은 시간을 일·시·분·초로 봐야 한다 (decisions.md B-10).
+ */
+import type { Deadline } from '../lib/deadlines.ts';
+import { urgencyTier } from '../lib/deadlines.ts';
+import { googleEventUrl, icsSlug } from '../lib/ics.ts';
+import { editionTitle } from '../lib/title.ts';
+import { href } from '../lib/urls.ts';
+
+interface Props {
+  item: Deadline;
+  topicLabel: string;
+  now: Date;
+}
+
+const { item, topicLabel, now } = Astro.props;
+const deadline = item.fullPaper!;
+
+const title = editionTitle(item);
+const tier = item.dday === null ? 3 : urgencyTier(item.dday);
+const icore = item.conference.ranks.icore.rank;
+const grade = item.conference.ranks.internal.grade;
+
+const icsPath = href(`ics/${icsSlug(item.key)}.ics`);
+const googleUrl = googleEventUrl(item);
+
+const remaining = Math.max(0, deadline.instant.getTime() - now.getTime());
+const days = Math.floor(remaining / 86_400_000);
+const hours = Math.floor((remaining % 86_400_000) / 3_600_000);
+const minutes = Math.floor((remaining % 3_600_000) / 60_000);
+const seconds = Math.floor((remaining % 60_000) / 1000);
+---
+
+<article class="saved" data-key={item.key} data-countdown={deadline.instant.toISOString()}>
+  <header>
+    <div class="titles">
+      <h3>{title}</h3>
+      <div class="badges">
+        {icore && <span class="badge">ICORE {icore}</span>}
+        {grade && <span class="badge">교내 {grade}</span>}
+      </div>
+    </div>
+    <button
+      class="icon trash"
+      type="button"
+      data-save={item.key}
+      data-remove
+      aria-label={`${title} 내 마감에서 제거`}
+      title="내 마감에서 제거"
+    >
+      <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor"
+           stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M2.6 4.2h10.8" />
+        <path d="M6.4 4.2V2.8h3.2v1.4" />
+        <path d="M4.1 4.2l.66 8.9a.9.9 0 0 0 .9.83h4.68a.9.9 0 0 0 .9-.83l.66-8.9" />
+        <path d="M6.7 6.9v4.3M9.3 6.9v4.3" />
+      </svg>
+    </button>
+  </header>
+
+  <div class="clock" data-tier={tier} role="timer" aria-live="off">
+    <div class="unit">
+      <span class="num" data-days>{days}</span>
+      <span class="cap">일</span>
+    </div>
+    <div class="unit">
+      <span class="num" data-hours>{String(hours).padStart(2, '0')}</span>
+      <span class="cap">시간</span>
+    </div>
+    <div class="unit">
+      <span class="num" data-minutes>{String(minutes).padStart(2, '0')}</span>
+      <span class="cap">분</span>
+    </div>
+    <div class="unit seconds">
+      <span class="num" data-seconds>{String(seconds).padStart(2, '0')}</span>
+      <span class="cap">초</span>
+    </div>
+  </div>
+
+  <p class="closed" data-closed hidden>마감이 지났습니다</p>
+
+  <dl>
+    <dt>마감</dt>
+    <dd><span class="mono">{deadline.kst}</span> <span class="tz">KST</span></dd>
+    <dt>통보</dt>
+    <dd><span class="mono">{item.notification ?? '미수집'}</span></dd>
+    <dt>분야</dt>
+    <dd>{topicLabel}</dd>
+  </dl>
+
+  <footer>
+    <a href={item.sourceUrl} rel="noopener">CFP 원문</a>
+    <button
+      class="addcal"
+      type="button"
+      data-add-cal
+      data-cal-google={googleUrl}
+      data-cal-ics={icsPath}
+    >캘린더에 추가</button>
+  </footer>
+</article>
+
+<style>
+  .saved {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 16px;
+  }
+
+  header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .titles {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  /* 44px 터치 목표를 지키고, 음수 마진으로 시각적 정렬만 맞춘다. */
+  .icon {
+    flex: none;
+    margin: -10px -10px 0 0;
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    background: none;
+    border: 0;
+    border-radius: 999px;
+    color: var(--ink3);
+    cursor: pointer;
+  }
+
+  .icon:hover,
+  .icon:focus-visible {
+    color: var(--brand);
+  }
+
+  /* 파괴적 동작이라 되돌아오는 색이 다르다. */
+  .trash:hover,
+  .trash:focus-visible {
+    color: var(--u1);
+  }
+
+  h3 {
+    margin: 0;
+    font: 600 17px/22px var(--sans);
+    letter-spacing: -0.02em;
+  }
+
+  .badges {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    display: flex;
+    align-items: center;
+    height: 20px;
+    padding: 0 7px;
+    border: 1px solid var(--ink3);
+    border-radius: 4px;
+    color: var(--ink2);
+    font: 500 11px/1 var(--sans);
+    white-space: nowrap;
+  }
+
+  /* 남은 시간이 이 카드의 주인공이다. */
+  .clock {
+    display: flex;
+    align-items: baseline;
+    gap: 11px;
+    margin: 16px 0 4px;
+  }
+
+  .unit {
+    display: flex;
+    align-items: baseline;
+    gap: 3px;
+  }
+
+  .unit[hidden],
+  .clock[hidden] {
+    display: none;
+  }
+
+  .num {
+    font: 700 28px/1 var(--mono);
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .cap {
+    font: 400 12px/1 var(--sans);
+    color: var(--ink3);
+  }
+
+  /* 초는 매초 바뀐다. 폭이 흔들리면 옆 숫자가 따라 밀리므로 자리를 잡아둔다. */
+  .seconds .num {
+    min-width: 2ch;
+    text-align: right;
+  }
+
+  .clock[data-tier='1'] .num { color: var(--u1); }
+  .clock[data-tier='2'] .num { color: var(--u2); }
+  .clock[data-tier='3'] .num { color: var(--u3); }
+
+  .closed {
+    margin: 16px 0 4px;
+    font: 700 20px/1 var(--sans);
+    color: var(--ink3);
+  }
+
+  .closed[hidden] {
+    display: none;
+  }
+
+  dl {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 14px;
+    margin: 14px 0 0;
+    padding-top: 12px;
+    border-top: 1px solid var(--rule);
+  }
+
+  dt {
+    font: 400 12px/26px var(--sans);
+    color: var(--ink3);
+  }
+
+  dd {
+    margin: 0;
+    min-width: 0;
+    font: 500 12px/26px var(--sans);
+    text-align: right;
+    display: flex;
+    justify-content: flex-end;
+    align-items: baseline;
+    gap: 5px;
+  }
+
+  .mono { font-family: var(--mono); }
+  .tz { font: 400 11px/26px var(--sans); color: var(--ink3); }
+
+  footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--rule);
+  }
+
+  footer a {
+    font: 400 12px/18px var(--sans);
+    color: var(--ink3);
+  }
+
+  /* 주 동작이라 브랜드색을 준다. --brand는 라이트/다크 모두 카드 위에서 7:1을 넘는다. */
+  .addcal {
+    border-color: var(--brand) !important;
+    color: var(--brand) !important;
+  }
+
+  footer button {
+    height: 32px;
+    padding: 0 12px;
+    background: none;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    color: var(--ink2);
+    font: 500 12px/1 var(--sans);
+    cursor: pointer;
+  }
+</style>

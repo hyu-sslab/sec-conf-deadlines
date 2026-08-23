@@ -1,0 +1,458 @@
+---
+/**
+ * 연간 개요 — 한 달씩 넘기는 달력 (decisions.md B-11).
+ * 격자는 날짜의 위치와 밀도만, 이름은 아래 목록이 맡는다.
+ */
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import AppBar from '../components/AppBar.astro';
+import TabBar from '../components/TabBar.astro';
+import { href } from '../lib/urls.ts';
+import { editionTitle } from '../lib/title.ts';
+import {
+  buildDeadlines,
+  compareByDeadline,
+  estimateNextEdition,
+  groupByMonth,
+  loadConferences,
+  monthsInHorizon,
+  type Deadline,
+} from '../lib/deadlines.ts';
+
+const now = new Date();
+const records = await loadConferences();
+const all = buildDeadlines(records, now);
+
+const dated = all.filter((item) => item.fullPaper !== null);
+const liveIds = new Set(dated.filter((item) => !item.isPast).map((d) => d.conference.id));
+const projected = records
+  .filter((conference) => !liveIds.has(conference.id) && conference.editions.length > 0)
+  .map((conference) => estimateNextEdition(conference, now))
+  .filter(
+    (item): item is Deadline => item !== null && item.fullPaper !== null && !item.isPast,
+  );
+
+/** 지난 마감까지 전부 담는다. 한 해의 밀도를 보는 화면이기 때문이다. */
+const everything = [...dated, ...projected].sort(compareByDeadline);
+const groups = groupByMonth(everything);
+
+const stateOf = (item: Deadline) =>
+  item.isEstimated ? 'est' : item.isPast ? 'past' : 'live';
+
+/** 한 날짜에 여러 건이면 가장 눈에 띄어야 하는 상태를 남긴다. */
+const PRIORITY = { live: 3, est: 2, past: 1 } as const;
+
+const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
+
+let lastYear = 0;
+const months = groups.map((group) => {
+  const first = new Date(Date.UTC(group.year, group.month - 1, 1));
+  const days = new Date(Date.UTC(group.year, group.month, 0)).getUTCDate();
+
+  const marks = new Map<number, keyof typeof PRIORITY>();
+  for (const item of group.items) {
+    const day = item.fullPaper!.date.day;
+    const state = stateOf(item);
+    const held = marks.get(day);
+    if (!held || PRIORITY[state] > PRIORITY[held]) marks.set(day, state);
+  }
+
+  const head = group.year !== lastYear ? group.year : null;
+  lastYear = group.year;
+
+  return {
+    ...group,
+    head,
+    lead: first.getUTCDay(),
+    cells: Array.from({ length: days }, (_, i) => ({
+      day: i + 1,
+      mark: marks.get(i + 1) ?? null,
+    })),
+  };
+});
+
+const topicEntries = await getCollection('topics');
+const shortLabel = new Map(topicEntries.map((entry) => [entry.id, entry.data.short]));
+
+const jumpable = new Set(monthsInHorizon(now, 12));
+
+const titleOf = (d: Deadline) => editionTitle(d);
+---
+
+<Base title="연간 개요 — Security & Software Engineering Conference Deadlines">
+  <AppBar />
+
+  <main class="page" data-scroll>
+    <div class="pager" data-pager hidden>
+      <button type="button" data-prev aria-label="이전 달">‹</button>
+      <span class="label" data-pager-label aria-live="polite"></span>
+      <button type="button" data-next aria-label="다음 달">›</button>
+    </div>
+
+
+    <p class="legend">
+      <span class="key"><i data-mark="live"></i>예정</span>
+      <span class="key"><i data-mark="est"></i>예상</span>
+      <span class="key"><i data-mark="past"></i>지남</span>
+    </p>
+
+    {
+      months.map((month) => (
+        <>
+          {month.head && <h2 class="year">{month.head}</h2>}
+
+          <section
+            class="month"
+            data-month={month.key}
+            data-label={`${month.year}년 ${month.month}월`}
+          >
+            <div class="head">
+              <h3>{month.month}월</h3>
+              {jumpable.has(month.key) && (
+                <a class="chev" href={`${href()}#month-${month.key}`} aria-label={`${month.month}월 목록으로`}>
+                  ›
+                </a>
+              )}
+            </div>
+
+            <div class="grid" role="presentation">
+              {WEEKDAYS.map((label, index) => (
+                <span class="wd" data-weekend={index === 0 || index === 6 ? '' : undefined}>
+                  {label}
+                </span>
+              ))}
+              {Array.from({ length: month.lead }, () => <span />)}
+              {month.cells.map((cell) => (
+                <span class="day" data-mark={cell.mark ?? undefined}>
+                  {cell.day}
+                </span>
+              ))}
+            </div>
+
+            <ul class="items">
+              {month.items.map((item) => (
+                <li data-state={stateOf(item)}>
+                  <span class="d">{String(item.fullPaper!.date.day).padStart(2, '0')}</span>
+                  <span class="body">
+                    <span class="top">
+                      <span class="name">{titleOf(item)}</span>
+                      {item.isEstimated && <span class="state">예상</span>}
+                    </span>
+                    <span class="field">
+                      {item.conference.ranks.icore.rank && (
+                        <b class="rank">{item.conference.ranks.icore.rank}</b>
+                      )}
+                      {item.conference.topics
+                        .map((topic) => shortLabel.get(topic) ?? topic)
+                        .join(' · ')}
+                    </span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        </>
+      ))
+    }
+  </main>
+
+  <TabBar current="year" />
+</Base>
+
+<style>
+  .page {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scroll-behavior: smooth;
+    padding: 0 16px 28px;
+  }
+
+  /*
+   * JS가 붙으면 달력을 한 달씩 넘겨 본다. 17개월을 세로로 쌓으면 원하는 달을
+   * 찾는 데만 스크롤이 든다 — 연간 뷰의 목적은 "이 달에 뭐가 있나"이지
+   * "전부 훑기"가 아니다.
+   *
+   * JS가 없으면 모든 달이 그대로 쌓여 나온다 (NFR-009). 페이저는 그때 감춘다.
+   */
+  .pager {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    background: var(--bg);
+    padding: 12px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .pager[hidden] {
+    display: none;
+  }
+
+  /* 엄지로 누르는 버튼이다. 44px 최소 기준보다 넉넉하게 잡는다. */
+  .pager button {
+    flex: none;
+    width: 56px;
+    height: 56px;
+    display: grid;
+    place-items: center;
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    color: var(--ink);
+    font-size: 26px;
+    line-height: 1;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .pager button:active:not(:disabled) {
+    background: var(--brand-soft);
+    border-color: var(--brand);
+    color: var(--brand);
+  }
+
+  .pager button:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  .label {
+    flex: 1;
+    text-align: center;
+    font: 700 19px/24px var(--sans);
+    letter-spacing: -0.02em;
+  }
+
+  :global(html[data-js]) .year {
+    display: none;
+  }
+
+  :global(html[data-js]) .month:not([data-current]) {
+    display: none;
+  }
+
+  :global(html[data-js]) .month {
+    border-bottom: 0;
+  }
+
+  :global(html[data-js]) .month .head {
+    display: none;
+  }
+
+
+
+  .legend {
+    display: flex;
+    gap: 14px;
+    margin: 10px 0 0;
+  }
+
+  .key {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font: 400 11px/16px var(--sans);
+    color: var(--ink3);
+  }
+
+  .key i {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+  }
+
+  .year {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    margin: 0;
+    background: var(--bg);
+    padding: 16px 0 8px;
+    font: 700 15px/20px var(--mono);
+    letter-spacing: 0.02em;
+    color: var(--ink);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .month {
+    padding: 16px 0 18px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .head {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  h3 {
+    margin: 0;
+    font: 600 15px/20px var(--sans);
+  }
+
+  .chev {
+    margin-left: auto;
+    width: 44px;
+    height: 24px;
+    display: grid;
+    place-items: center;
+    font-size: 15px;
+    color: var(--ink3);
+    text-decoration: none;
+  }
+
+  /* 격자는 이름을 담지 않는다. 날짜의 위치와 밀도만 보여준다. */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 3px;
+    margin-top: 12px;
+  }
+
+  .wd {
+    display: grid;
+    place-items: center;
+    height: 24px;
+    font: 500 11px/1 var(--sans);
+    color: var(--ink3);
+  }
+
+  .wd[data-weekend] {
+    color: var(--ink3);
+    opacity: 0.6;
+  }
+
+  /* 한 달만 보이므로 격자를 키운다. 세로 공백을 줄이면서 가독성도 오른다. */
+  .day {
+    display: grid;
+    place-items: center;
+    height: 42px;
+    border-radius: 999px;
+    font: 400 14px/1 var(--mono);
+    color: var(--ink2);
+  }
+
+  /* 마감이 있는 날만 브랜드색으로 채운다. */
+  .day[data-mark='live'] {
+    background: var(--brand);
+    color: #fff;
+    font-weight: 700;
+  }
+
+  .day[data-mark='est'] {
+    border: 1px dashed var(--brand);
+    color: var(--brand);
+    font-weight: 600;
+  }
+
+  .day[data-mark='past'] {
+    background: var(--rule);
+    color: var(--ink2);
+    font-weight: 600;
+  }
+
+  .key i[data-mark='live'] { background: var(--brand); }
+  .key i[data-mark='est'] { border: 1px dashed var(--brand); }
+  .key i[data-mark='past'] { background: var(--rule); }
+
+  .items {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 14px 0 0;
+    padding: 12px 0 0;
+    border-top: 1px solid var(--rule);
+    list-style: none;
+  }
+
+  .items {
+    gap: 12px;
+  }
+
+  .items li {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  .d {
+    flex: none;
+    width: 20px;
+    text-align: right;
+    font: 500 12px/20px var(--mono);
+    color: var(--ink3);
+  }
+
+  .body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .top {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font: 600 15px/20px var(--sans);
+    letter-spacing: -0.02em;
+  }
+
+  /*
+   * 둘째 줄에 등급과 분류를 함께 둔다. D-day는 넣지 않는다 — 연간 화면에서
+   * 묻는 것은 "언제 무엇이 있나"이지 "며칠 남았나"가 아니다. 남은 일수는
+   * 목록 화면이 답한다.
+   */
+  .field {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font: 400 11px/15px var(--sans);
+    color: var(--ink3);
+  }
+
+  .rank {
+    flex: none;
+    font: 700 10px/15px var(--mono);
+    color: var(--ink3);
+  }
+
+  .state {
+    flex: none;
+    margin-left: auto;
+    font: 500 11px/20px var(--sans);
+    color: var(--ink3);
+    white-space: nowrap;
+  }
+
+  li[data-state='past'] {
+    opacity: 0.5;
+  }
+
+  li[data-state='live'] .state {
+    color: var(--brand);
+  }
+
+  li[data-state='est'] .state {
+    font-family: var(--sans);
+    font-weight: 500;
+  }
+</style>
