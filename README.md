@@ -1,6 +1,6 @@
 # Security & Software Engineering Conference Deadlines
 
-### → **[사이트 열기](https://hyu-sslab.github.io/sec-conf-deadlines/)**
+### → **[🌐](https://hyu-sslab.github.io/sec-conf-deadlines/)**
 
 보안·소프트웨어공학 국제 학회의 마감과 통보(notification) 일정.
 
