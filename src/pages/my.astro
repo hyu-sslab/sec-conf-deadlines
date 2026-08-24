@@ -14,7 +14,12 @@ import { loadDeadlines, type Deadline } from '../lib/deadlines.ts';
 
 const now = new Date();
 const all = await loadDeadlines(now);
-const upcoming = all.filter((item) => item.fullPaper !== null && !item.isPast);
+/*
+ * 지난 마감도 렌더한다. 빌드 시점에 걸러 내면 저장해 둔 학회가 마감된 순간
+ * 카드가 통째로 사라져, "저장 + 마감"일 때 뜨는 축하가 영영 뜨지 않는다.
+ * 저장하지 않은 카드는 CSS가 감추므로 목록이 지저분해지지는 않는다.
+ */
+const saved = all.filter((item) => item.fullPaper !== null);
 
 const topicEntries = await getCollection('topics');
 const topicLabel = new Map(topicEntries.map((entry) => [entry.id, entry.data.label]));
@@ -34,7 +39,7 @@ import { href } from '../lib/urls.ts';
     </h1>
 
     <div class="cards">
-      {upcoming.map((item) => <CountdownCard item={item} topicLabel={labelFor(item)} now={now} />)}
+      {saved.map((item) => <CountdownCard item={item} topicLabel={labelFor(item)} now={now} />)}
     </div>
 
     <div class="empty" data-empty>

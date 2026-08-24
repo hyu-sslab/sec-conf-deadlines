@@ -31,6 +31,8 @@ const filterAttrs = {
   'data-name': `${item.conference.name} ${item.conference.full_name ?? ''}`.toLowerCase(),
   'data-month': item.monthKey ?? '',
   'data-dday': String(item.dday ?? ''),
+  // 빌드가 며칠 지나면 서버가 '미도래'로 그린 항목이 이미 마감돼 있을 수 있다.
+  ...(item.fullPaper ? { 'data-deadline': item.fullPaper.instant.toISOString() } : {}),
   'data-icore': icore ?? '',
   'data-grade': grade ?? '',
   'data-topics': item.conference.topics.join(' '),

@@ -39,7 +39,7 @@ import { href } from '../lib/urls.ts';
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Gaegu:wght@700&display=swap"
     />
     <link
       rel="stylesheet"
@@ -65,6 +65,7 @@ import { href } from '../lib/urls.ts';
 
     <script>
       import {
+        DAY_MS,
         DEFAULT_HORIZON_MONTHS,
         RELAXED_TIER,
         TOAST_MS,
@@ -115,6 +116,35 @@ import { href } from '../lib/urls.ts';
         toastTimer = setTimeout(() => (toastEl.hidden = true), TOAST_MS);
       };
 
+      /*
+       * 만료 판정.
+       *
+       * 서버는 빌드 시점 기준으로 그린다. 배포가 며칠 지나면 이미 마감된
+       * 항목이 '미도래'로 남아 저장 버튼이 붙어 있다. 지난 마감을 내 마감에
+       * 넣을 수는 없으므로 여기서 걷어낸다.
+       */
+      const markExpired = () => {
+        const now = Date.now();
+        for (const row of document.querySelectorAll<HTMLElement>('[data-deadline]')) {
+          const past = Date.parse(row.dataset.deadline!) <= now;
+          row.toggleAttribute('data-expired', past);
+        }
+      };
+      markExpired();
+
+      /*
+       * 축하 면의 그림은 여기서 처음 붙는다.
+       *
+       * 내 마감 페이지는 마감이 있는 학회를 전부 그려 두고 저장한 것만 보여준다.
+       * 그림을 마크업에 박아 두면 태그가 수십 개 생겨, 축하 면을 한 번도 보지
+       * 않는 방문자도 브라우저가 받아 온다.
+       */
+      const armCat = (row: HTMLElement) => {
+        if (!row.hasAttribute('data-saved') || !row.hasAttribute('data-expired')) return;
+        const cat = row.querySelector<HTMLImageElement>('img[data-cat]');
+        if (cat && !cat.src) cat.src = cat.dataset.cat!;
+      };
+
       /* ---------- 저장 목록 ---------- */
       const rowOf = (key: string) =>
         document.querySelector<HTMLElement>(`[data-key="${CSS.escape(key)}"]`);
@@ -122,7 +152,13 @@ import { href } from '../lib/urls.ts';
       const paint = () => {
         const saved = read<string[]>(SAVED_KEY, []);
         for (const button of document.querySelectorAll<HTMLElement>('[data-save]')) {
+          // 마감된 항목에는 '추가'가 없다. 이미 저장한 것의 '제거'는 남긴다.
+          const expired = button.closest('[data-expired]') !== null;
           const on = saved.includes(button.dataset.save!);
+          if (expired && !on && !button.hasAttribute('data-remove')) {
+            button.hidden = true;
+            continue;
+          }
           button.hidden = false;
           button.toggleAttribute('data-on', on);
           button.setAttribute('aria-pressed', String(on));
@@ -143,7 +179,10 @@ import { href } from '../lib/urls.ts';
           for (const row of my.querySelectorAll<HTMLElement>('[data-key]')) {
             const on = saved.includes(row.dataset.key!);
             row.toggleAttribute('data-saved', on);
-            if (on) shown += 1;
+            if (on) {
+              shown += 1;
+              armCat(row);
+            }
           }
           const head = my.querySelector<HTMLElement>('[data-saved-head]');
           const hint = my.querySelector<HTMLElement>('[data-saved-hint]');
@@ -261,10 +300,12 @@ import { href } from '../lib/urls.ts';
 
           cfpEl.href = row.dataset.source ?? '#';
 
-          // 추정 에디션은 저장할 날짜가 없다. 경고만 남기고 동작을 두지 않는다.
-          saveEl.hidden = openEstimated;
-          hintEl.hidden = openEstimated;
-          if (!openEstimated) {
+          // 추정 에디션은 저장할 날짜가 없고, 지난 마감은 저장할 이유가 없다.
+          const openExpired = row.hasAttribute('data-expired');
+          const noSave = openEstimated || (openExpired && !read<string[]>(SAVED_KEY, []).includes(openKey));
+          saveEl.hidden = noSave;
+          hintEl.hidden = noSave;
+          if (!noSave) {
             const saved = read<string[]>(SAVED_KEY, []).includes(openKey);
             saveEl.textContent = saved ? '내 마감에서 제거' : '내 마감에 추가';
             saveEl.toggleAttribute('data-on', saved);
@@ -520,9 +561,10 @@ import { href } from '../lib/urls.ts';
       const clocks = [...document.querySelectorAll<HTMLElement>('[data-countdown]')];
       if (clocks.length) {
         const pad = (n: number) => String(n).padStart(2, '0');
+        // 같은 값을 다시 써도 배치가 다시 잡힌다. 매초 도는 루프라 걸러 준다.
         const put = (card: HTMLElement, key: string, value: string) => {
           const el = card.querySelector<HTMLElement>(`[data-${key}]`);
-          if (el) el.textContent = value;
+          if (el && el.textContent !== value) el.textContent = value;
         };
 
         const tick = () => {
@@ -533,18 +575,35 @@ import { href } from '../lib/urls.ts';
             const closed = card.querySelector<HTMLElement>('[data-closed]');
             if (!clock || !closed) continue;
 
+            /*
+             * 넘긴 카드는 한 번만 뒤집는다. 매초 같은 값을 다시 쓰면 그때마다
+             * 속성이 바뀐 것으로 잡혀 배치가 다시 서고, 축하 면이 도는 중이라
+             * 그 흔들림이 눈에 띈다.
+             */
+            const wasExpired = card.hasAttribute('data-expired');
             if (left <= 0) {
+              if (wasExpired) continue;
               clock.hidden = true;
               closed.hidden = false;
+              // 카드 아래쪽(일정·캘린더)을 감추는 것은 CSS가 한다.
+              card.setAttribute('data-expired', '');
+              armCat(card);
               continue;
             }
-            clock.hidden = false;
-            closed.hidden = true;
+            if (wasExpired) {
+              clock.hidden = false;
+              closed.hidden = true;
+              card.removeAttribute('data-expired');
+            }
 
             const days = Math.floor(left / 86_400_000);
             const hours = Math.floor((left % 86_400_000) / 3_600_000);
             const minutes = Math.floor((left % 3_600_000) / 60_000);
             const seconds = Math.floor((left % 60_000) / 1000);
+
+            // 하루 안으로 들어오면 '일'을 뗀다. 서버 렌더와 같은 경계다.
+            const dayUnit = card.querySelector<HTMLElement>('[data-unit-days]');
+            if (dayUnit) dayUnit.hidden = left < DAY_MS;
 
             put(card, 'days', String(days));
             put(card, 'hours', pad(hours));
