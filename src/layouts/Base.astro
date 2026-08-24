@@ -16,6 +16,15 @@ const {
 } = Astro.props;
 
 import { href } from '../lib/urls.ts';
+
+/*
+ * 링크 미리보기(Open Graph).
+ *
+ * og:image와 og:url은 절대 URL이어야 한다 — 카카오톡·슬랙은 상대 경로를
+ * 읽지 못한다. astro.config의 site가 그 절대 주소의 출처다.
+ */
+const ogImage = new URL(href('og.png'), Astro.site).href;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
 ---
 
 <!doctype html>
@@ -31,9 +40,18 @@ import { href } from '../lib/urls.ts';
     <link rel="apple-touch-icon" href={href('apple-touch-icon.png')} />
     <link rel="manifest" href={href('site.webmanifest')} />
     <meta name="theme-color" content="#0E4A84" />
+    <link rel="canonical" href={canonical} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="SecSE Deadlines" />
+    <meta property="og:locale" content="ko_KR" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={SITE} />
+    <meta name="twitter:card" content="summary_large_image" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
