@@ -40,6 +40,9 @@ export function monthBarHeight(count: number, peak: number): number {
 /** 마감을 모르는 항목은 급할 이유가 없다. 정렬·색에서 "여유"로 다룬다. */
 export const RELAXED_TIER = 3;
 
+/** 하루(ms). 카운트다운이 초를 보여줄지 가르는 경계다. */
+export const DAY_MS = 86_400_000;
+
 /** 토스트가 떠 있는 시간(ms). */
 export const TOAST_MS = 2400;
 

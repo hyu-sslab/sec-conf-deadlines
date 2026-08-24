@@ -7,6 +7,8 @@
 
   --sans: "IBM Plex Sans", "Pretendard", system-ui, sans-serif;
   --mono: "IBM Plex Mono", "Pretendard", ui-monospace, monospace;
+  /* 이스터에그 한 줄에만 쓴다. 굵기가 하나뿐이라 weight를 올리지 않는다. */
+  --fun: "Gaegu", "IBM Plex Sans", system-ui, sans-serif;
 
   --brand: #0E4A84;
   --brand-soft: #EAF1F9;

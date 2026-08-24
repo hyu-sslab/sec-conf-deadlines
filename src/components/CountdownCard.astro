@@ -1,13 +1,14 @@
 ---
 /**
  * 내 마감 전용 카드. 목록과 일부러 다르게 만든다 — 여기 있는 학회는 이미
- * 내기로 정한 것이라 남은 시간을 일·시·분·초로 봐야 한다 (decisions.md B-10).
+ * 내기로 정한 것이라 남은 시간을 초 단위까지 봐야 한다 (decisions.md B-10).
  */
 import type { Deadline } from '../lib/deadlines.ts';
 import { urgencyTier } from '../lib/deadlines.ts';
 import { googleEventUrl, icsSlug } from '../lib/ics.ts';
 import { editionTitle } from '../lib/title.ts';
 import { href } from '../lib/urls.ts';
+import { DAY_MS } from '../lib/config.ts';
 
 interface Props {
   item: Deadline;
@@ -31,12 +32,21 @@ const days = Math.floor(remaining / 86_400_000);
 const hours = Math.floor((remaining % 86_400_000) / 3_600_000);
 const minutes = Math.floor((remaining % 3_600_000) / 60_000);
 const seconds = Math.floor((remaining % 60_000) / 1000);
+
+/*
+ * 24시간이 경계다. 초는 항상 보이고, 하루가 남지 않았으면 '일'만 뺀다 —
+ * 어차피 0이라 자리만 차지한다.
+ */
+const lastDay = remaining < DAY_MS;
 ---
 
 <article class="saved" data-key={item.key} data-countdown={deadline.instant.toISOString()}>
   <header>
     <div class="titles">
-      <h3>{title}</h3>
+      <div class="head-line">
+        <h3>{title}</h3>
+        <span class="stamp" aria-hidden="true">마감</span>
+      </div>
       <div class="badges">
         {icore && <span class="badge">ICORE {icore}</span>}
         {grade && <span class="badge">교내 {grade}</span>}
@@ -61,7 +71,7 @@ const seconds = Math.floor((remaining % 60_000) / 1000);
   </header>
 
   <div class="clock" data-tier={tier} role="timer" aria-live="off">
-    <div class="unit">
+    <div class="unit" data-unit-days hidden={lastDay || undefined}>
       <span class="num" data-days>{days}</span>
       <span class="cap">일</span>
     </div>
@@ -79,7 +89,27 @@ const seconds = Math.floor((remaining % 60_000) / 1000);
     </div>
   </div>
 
-  <p class="closed" data-closed hidden>마감이 지났습니다</p>
+  {/* 마감이 지나면 카드 아랫부분이 통째로 이 축하 면으로 바뀐다. */}
+  <div class="over" data-closed hidden>
+    <div class="confetti" aria-hidden="true">
+      <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+    </div>
+    {/*
+      src를 비워 둔다. 이 페이지는 마감이 있는 학회를 전부 그리므로 이 태그가
+      수십 개 생기는데, src가 박혀 있으면 축하 면이 한 번도 안 뜨는 방문자도
+      브라우저가 그림을 받아 온다 (요소마다 한 번씩). 저장해 둔 학회가 실제로
+      마감됐을 때 클라이언트가 붙인다.
+    */}
+    <img
+      class="cat"
+      data-cat={href('soju-cat.webp')}
+      width="240"
+      height="149"
+      alt=""
+      decoding="async"
+    />
+    <p class="line">한 잔 해야지…</p>
+  </div>
 
   <dl>
     <dt>마감</dt>
@@ -149,10 +179,51 @@ const seconds = Math.floor((remaining % 60_000) / 1000);
     color: var(--u1);
   }
 
+  .head-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+
   h3 {
     margin: 0;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     font: 600 17px/22px var(--sans);
     letter-spacing: -0.02em;
+  }
+
+  /*
+   * 마감 도장. 크게 떠서 쿵 내려앉는다 — 도장이 찍히는 동작이다.
+   * 기울여 두면 인쇄물이 아니라 손으로 찍은 느낌이 난다.
+   */
+  .stamp {
+    flex: none;
+    display: none;
+    padding: 1px 6px;
+    border: 2px solid var(--u1);
+    border-radius: 5px;
+    color: var(--u1);
+    font: 700 12px/1.4 var(--sans);
+    letter-spacing: -0.01em;
+  }
+
+  .saved[data-expired] .stamp {
+    display: block;
+    animation: nx-thud 0.42s cubic-bezier(0.2, 0.9, 0.25, 1) 0.15s both;
+  }
+
+  @keyframes nx-thud {
+    0% { opacity: 0; transform: scale(2.6); }
+    55% { opacity: 1; transform: scale(0.92); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .saved[data-expired] .stamp { animation: none; }
   }
 
   .badges {
@@ -213,13 +284,97 @@ const seconds = Math.floor((remaining % 60_000) / 1000);
   .clock[data-tier='2'] .num { color: var(--u2); }
   .clock[data-tier='3'] .num { color: var(--u3); }
 
-  .closed {
-    margin: 16px 0 4px;
-    font: 700 20px/1 var(--sans);
-    color: var(--ink3);
+  /*
+   * 마감이 지난 카드. 남은 시간도 캘린더 추가도 의미가 없어졌으므로
+   * 아래를 통째로 덮는다. 음수 마진으로 카드 안쪽 여백까지 채운다.
+   */
+  .over {
+    position: relative;
+    margin: 16px -16px -16px;
+    padding: 20px 16px 18px;
+    background: var(--brand-soft);
+    overflow: hidden;
+    text-align: center;
+    animation: nx-wash 0.4s ease 0.1s both;
   }
 
-  .closed[hidden] {
+  .over[hidden] {
+    display: none;
+  }
+
+  .cat {
+    position: relative;
+    z-index: 1;
+    width: 150px;
+    height: auto;
+    animation: nx-rise 0.6s cubic-bezier(0.2, 1.25, 0.35, 1) 0.25s both;
+  }
+
+  .line {
+    position: relative;
+    z-index: 1;
+    margin: 2px 0 0;
+    font: 700 30px/1.2 var(--fun);
+    letter-spacing: -0.01em;
+    color: var(--brand);
+    animation: nx-rise 0.5s cubic-bezier(0.2, 1.2, 0.35, 1) 0.5s both;
+  }
+
+  .confetti {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .confetti i {
+    position: absolute;
+    top: -14px;
+    width: 7px;
+    height: 11px;
+    border-radius: 1px;
+    animation: nx-fall 3s linear infinite;
+  }
+
+  /* 색·위치를 흩어 놓고, 지연은 음수로 준다.
+     양수면 에그가 뜬 직후 패널이 비어 있다가 뒤늦게 하나씩 떨어진다.
+     음수면 첫 프레임부터 이미 위아래로 흩날리는 상태다. */
+  .confetti i:nth-child(1) { left: 6%;  background: var(--u1); animation-delay: -0.15s; }
+  .confetti i:nth-child(2) { left: 15%; background: var(--u2); animation-delay: -1.45s; }
+  .confetti i:nth-child(3) { left: 27%; background: var(--u3); animation-delay: -0.75s; }
+  .confetti i:nth-child(4) { left: 39%; background: var(--u2); animation-delay: -2.25s; }
+  .confetti i:nth-child(5) { left: 50%; background: var(--u1); animation-delay: -1.05s; }
+  .confetti i:nth-child(6) { left: 61%; background: var(--u3); animation-delay: -1.95s; }
+  .confetti i:nth-child(7) { left: 73%; background: var(--u2); animation-delay: -0.45s; }
+  .confetti i:nth-child(8) { left: 84%; background: var(--u1); animation-delay: -2.55s; }
+  .confetti i:nth-child(9) { left: 93%; background: var(--u3); animation-delay: -1.65s; }
+
+  @keyframes nx-wash {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes nx-rise {
+    from { opacity: 0; transform: translateY(14px) scale(0.9); }
+    to { opacity: 1; transform: none; }
+  }
+
+  @keyframes nx-fall {
+    0% { opacity: 0; transform: translateY(-14px) rotate(0); }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(260px) rotate(520deg); }
+  }
+
+  /* 흔들림을 원치 않는 사용자에게는 색종이를 떨어뜨리지 않는다. */
+  @media (prefers-reduced-motion: reduce) {
+    .over, .cat, .line { animation: none; }
+    .confetti { display: none; }
+  }
+
+  /* 지난 마감에는 남은 시간도, 일정 정보도, 캘린더 추가도 필요 없다. */
+  .saved[data-expired] dl,
+  .saved[data-expired] footer {
     display: none;
   }
 
