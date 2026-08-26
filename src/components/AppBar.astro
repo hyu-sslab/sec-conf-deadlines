@@ -5,8 +5,15 @@ import { href } from '../lib/urls.ts';
 
 <header class="bar">
   <img
-    class="logo"
+    class="logo light"
     src={href('logo-sslab.png')}
+    width="199"
+    height="52"
+    alt="System Security Lab, Hanyang University"
+  />
+  <img
+    class="logo dark"
+    src={href('logo-sslab-dark.png')}
     width="199"
     height="52"
     alt="System Security Lab, Hanyang University"
@@ -15,7 +22,10 @@ import { href } from '../lib/urls.ts';
     <span class="scope">Security &amp; Software Engineering</span>
     <span class="name">Conference Deadlines</span>
   </h1>
-  <button type="button" id="theme-toggle" aria-label="테마 전환" title="테마">☾</button>
+  <button type="button" id="theme-toggle" aria-label="테마 전환" title="테마">
+    <span class="moon" aria-hidden="true">☾</span>
+    <span class="sun" aria-hidden="true">☀</span>
+  </button>
 </header>
 
 <style>
@@ -29,20 +39,45 @@ import { href } from '../lib/urls.ts';
     border-bottom: 1px solid var(--rule);
   }
 
-  /* 남색+회색 2톤이라 어두운 배경에서는 남색이 묻힌다. 밝기만 올린다. */
+  /*
+   * 로고의 'Lab'은 알파 42% 검정이라 흰 배경 위에서만 회색으로 합성된다.
+   * 어두운 배경에서는 필터로 살릴 수 없어 다크 전용 이미지를 따로 쓴다.
+   */
   .logo {
     flex: none;
     width: auto;
     height: 25px;
   }
 
-  :global(html[data-theme='dark']) .logo {
-    filter: brightness(1.75) saturate(0.85);
+  .logo.dark,
+  #theme-toggle .sun {
+    display: none;
+  }
+
+  /* ☀ 는 ☾ 보다 획이 가늘어 같은 크기로는 흐려 보인다. */
+  #theme-toggle .sun {
+    font-size: 20px;
+  }
+
+  :global(html[data-theme='dark']) .logo.light,
+  :global(html[data-theme='dark']) #theme-toggle .moon {
+    display: none;
+  }
+
+  :global(html[data-theme='dark']) .logo.dark,
+  :global(html[data-theme='dark']) #theme-toggle .sun {
+    display: block;
   }
 
   @media (prefers-color-scheme: dark) {
-    :global(html:not([data-theme='light'])) .logo {
-      filter: brightness(1.75) saturate(0.85);
+    :global(html:not([data-theme='light'])) .logo.light,
+    :global(html:not([data-theme='light'])) #theme-toggle .moon {
+      display: none;
+    }
+
+    :global(html:not([data-theme='light'])) .logo.dark,
+    :global(html:not([data-theme='light'])) #theme-toggle .sun {
+      display: block;
     }
   }
 
