@@ -249,53 +249,93 @@ export function nextEditionOf(
   return upcoming[0] ?? null;
 }
 
-/** 윤년 보정을 포함한 +1년. 2028-02-29 → 2029-02-28 */
-function addOneYear(value: string): string {
+/** 윤년 보정을 포함한 연 단위 이동. 2028-02-29 → 2029-02-28 */
+function addYears(value: string, years: number): string {
   const [datePart, timePart] = value.split(' ');
   const [year, month, day] = datePart.split('-').map(Number);
-  const probe = new Date(Date.UTC(year + 1, month - 1, day));
+  const probe = new Date(Date.UTC(year + years, month - 1, day));
   const shifted: CalendarDate =
     probe.getUTCMonth() === month - 1
-      ? { year: year + 1, month, day }
-      : { year: year + 1, month, day: 28 };
+      ? { year: year + years, month, day }
+      : { year: year + years, month, day: 28 };
   return timePart
     ? `${formatCalendarDate(shifted)} ${timePart}`
     : formatCalendarDate(shifted);
 }
 
-/** FR-021 — 전년도 패턴 기반 추정. confidence: estimated이므로 D-day가 없다. */
+function shiftDates(dates: EditionRecord['dates'], years: number): EditionRecord['dates'] {
+  const shift = (value: string | null) => value && addYears(value, years);
+  return {
+    abstract: shift(dates.abstract),
+    full_paper: shift(dates.full_paper)!,
+    rebuttal: dates.rebuttal
+      ? [addYears(dates.rebuttal[0], years), addYears(dates.rebuttal[1], years)]
+      : null,
+    notification: shift(dates.notification),
+    camera_ready: shift(dates.camera_ready),
+  };
+}
+
+/** 날짜가 실제로 적힌 에디션만. 미수집 항목을 기준으로 삼으면 추정이 죽는다. */
+function datedEditions(conference: ConferenceRecord): EditionRecord[] {
+  return conference.editions
+    .filter((edition) => edition.dates.full_paper !== null)
+    .sort((a, b) => (a.year - b.year) || (a.cycle - b.cycle));
+}
+
+/**
+ * FR-021 — 지난 패턴 기반 추정. confidence: estimated이므로 D-day가 없다.
+ *
+ * 두 가지를 구분한다.
+ *
+ *   같은 해에 남은 차수 — 1차가 끝났고 그 학회가 2차를 여는 곳이면 다음은 그해 2차다.
+ *   해를 넘길 때      — 학회는 매년 1차부터 돈다. 차수를 물려받으면 안 된다.
+ *
+ * 날짜는 반드시 같은 차수끼리 옮긴다. 2차 일정에 1년을 더해 1차라고 부르면
+ * 몇 달씩 어긋난다.
+ */
 export function estimateNextEdition(
   conference: ConferenceRecord,
   now: Date,
 ): Deadline | null {
-  const latest = [...conference.editions].sort((a, b) => {
-    const byYear = a.year - b.year;
-    return byYear !== 0 ? byYear : a.cycle - b.cycle;
-  }).at(-1);
+  const dated = datedEditions(conference);
+  const latest = dated.at(-1);
+  if (!latest) return null;
 
-  if (!latest || latest.dates.full_paper === null) return null;
+  const candidates: { base: EditionRecord; year: number; cycle: number }[] = [];
 
-  const shiftedDates: EditionRecord['dates'] = {
-    abstract: latest.dates.abstract && addOneYear(latest.dates.abstract),
-    full_paper: addOneYear(latest.dates.full_paper),
-    rebuttal: latest.dates.rebuttal
-      ? [addOneYear(latest.dates.rebuttal[0]), addOneYear(latest.dates.rebuttal[1])]
-      : null,
-    notification: latest.dates.notification && addOneYear(latest.dates.notification),
-    camera_ready: latest.dates.camera_ready && addOneYear(latest.dates.camera_ready),
-  };
+  // 이 학회가 연 적 있는 차수 중 지금 차수 바로 다음 것 — 같은 해에 아직 남았다.
+  const nextCycle = dated.filter((edition) => edition.cycle === latest.cycle + 1).at(-1);
+  if (nextCycle) {
+    candidates.push({ base: nextCycle, year: latest.year, cycle: nextCycle.cycle });
+  }
 
-  const estimated: EditionRecord = {
-    ...latest,
-    year: latest.year + 1,
-    dates: shiftedDates,
-    conference_date: null,
-    place: null,
-    note: `${latest.year}년 일정에서 1년을 더한 추정값이다. 공식 CFP로 확인해야 한다.`,
-    confidence: 'estimated',
-  };
+  // 해를 넘기면 1차부터 다시 돈다.
+  const firstCycle = dated.filter((edition) => edition.cycle === 1).at(-1);
+  if (firstCycle) {
+    candidates.push({ base: firstCycle, year: latest.year + 1, cycle: 1 });
+  }
+  if (candidates.length === 0) return null;
 
-  return toDeadline(conference, estimated, now);
+  const build = ({ base, year, cycle }: (typeof candidates)[number]) =>
+    toDeadline(
+      conference,
+      {
+        ...base,
+        year,
+        cycle,
+        dates: shiftDates(base.dates, year - base.year),
+        conference_date: null,
+        place: null,
+        note: `${base.year}년 ${base.cycle}차 일정에서 추정한 값이다. 공식 CFP로 확인해야 한다.`,
+        confidence: 'estimated',
+      },
+      now,
+    );
+
+  // 같은 해 다음 차수가 이미 지났으면 해를 넘긴 쪽을 쓴다.
+  const drafts = candidates.map(build);
+  return drafts.find((item) => !item.isPast) ?? drafts[drafts.length - 1];
 }
 
 export interface AlternativeOptions {
