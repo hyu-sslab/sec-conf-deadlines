@@ -3,14 +3,15 @@
  * 내 마감 (FR-032). 저장 목록은 localStorage에만 있으므로 전체 카드를 감춰
  * 렌더링하고 JS가 저장된 것만 드러낸다 — 별도 JSON 엔드포인트를 만들지 않는다.
  */
-import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import AppBar from '../components/AppBar.astro';
 import CountdownCard from '../components/CountdownCard.astro';
 import CalendarAdd from '../components/CalendarAdd.astro';
 import Toast from '../components/Toast.astro';
 import TabBar from '../components/TabBar.astro';
-import { loadDeadlines, type Deadline } from '../lib/deadlines.ts';
+import { loadDeadlines } from '../lib/deadlines.ts';
+import { loadTopics } from '../lib/topics.ts';
+import { href } from '../lib/urls.ts';
 
 const now = new Date();
 const all = await loadDeadlines(now);
@@ -21,12 +22,7 @@ const all = await loadDeadlines(now);
  */
 const saved = all.filter((item) => item.fullPaper !== null);
 
-const topicEntries = await getCollection('topics');
-const topicLabel = new Map(topicEntries.map((entry) => [entry.id, entry.data.label]));
-const labelFor = (item: Deadline) =>
-  item.conference.topics.map((topic) => topicLabel.get(topic) ?? topic).join(' · ');
-
-import { href } from '../lib/urls.ts';
+const { labelFor } = await loadTopics();
 ---
 
 <Base title="내 마감 — Security & Software Engineering Conference Deadlines">

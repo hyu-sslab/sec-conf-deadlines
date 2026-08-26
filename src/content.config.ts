@@ -7,6 +7,7 @@ import * as z from 'zod';
 import { file } from 'astro/loaders';
 import type { Loader } from 'astro/loaders';
 import { load as parseYaml, CORE_SCHEMA } from 'js-yaml';
+import { AOE } from './lib/dates.ts';
 
 /* ------------------------------------------------------------------ *
  * YAML 파싱 정책
@@ -143,7 +144,7 @@ const editionSchema = z
     /** 다중 마감 사이클 구분 (1차/2차 라운드) */
     cycle: z.number().int().positive().default(1),
     dates: datesSchema,
-    timezone: timezone.default('Etc/GMT+12'),
+    timezone: timezone.default(AOE),
     conference_date: conferenceDate.nullable().default(null),
     place: z.string().min(1).nullable().default(null),
     note: z.string().default(''),

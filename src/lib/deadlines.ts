@@ -1,13 +1,11 @@
 // 파생 데이터 (DR-004). 전부 빌드 타임 계산이며 디스크에 쓰지 않는다.
 // 순수 함수는 records를 인자로 받아 Astro 밖에서도 테스트된다.
 import type { CollectionEntry } from 'astro:content';
-import { RELAXED_TIER, urgencyTier } from './config.ts';
 import {
-  AOE,
   KST,
   calendarDateIn,
   dDay,
-  daysBetween,
+  daysSince,
   deadlineInstant,
   formatCalendarDate,
   formatInZone,
@@ -135,10 +133,7 @@ export function toDeadline(
     isEstimated,
     monthKey: fullPaper ? monthKeyOf(fullPaper.date) : null,
     rankScore: rankScoreOf(conference),
-    staleDays: daysBetween(
-      calendarDateIn(deadlineInstant(edition.last_verified_at, KST), KST),
-      calendarDateIn(now, KST),
-    ),
+    staleDays: daysSince(edition.last_verified_at, now, KST),
   };
 }
 
@@ -442,4 +437,48 @@ export async function loadDeadlines(now: Date = new Date()): Promise<Deadline[]>
   return buildDeadlines(await loadConferences(), now);
 }
 
-export { AOE, KST, RELAXED_TIER, urgencyTier };
+/**
+ * 다음 에디션이 아직 등록되지 않은 학회를 전년도 패턴으로 추정한다 (FR-021).
+ *
+ * 이게 없으면 CFP가 늦게 나오는 분야(AI 계열이 대표적이다)는 화면에서
+ * 통째로 사라진다. BR-004에 따라 추정값에는 카운트다운을 붙이지 않는다.
+ */
+export function projectedEditions(
+  records: ConferenceRecord[],
+  live: Deadline[],
+  now: Date,
+): Deadline[] {
+  const liveIds = new Set(live.map((item) => item.conference.id));
+  return records
+    .filter((conference) => !liveIds.has(conference.id) && conference.editions.length > 0)
+    .map((conference) => estimateNextEdition(conference, now))
+    .filter(
+      (item): item is Deadline => item !== null && item.fullPaper !== null && !item.isPast,
+    );
+}
+
+export interface PageDeadlines {
+  /** 원본 레코드. 추정 에디션을 만들 때 필요하다. */
+  records: ConferenceRecord[];
+  all: Deadline[];
+  /** 본문 마감이 있는 것만 */
+  dated: Deadline[];
+  live: Deadline[];
+  /** 최근 것부터 */
+  past: Deadline[];
+}
+
+/** 페이지들이 똑같이 반복하던 준비 과정. */
+export async function loadPageDeadlines(now: Date): Promise<PageDeadlines> {
+  const records = await loadConferences();
+  const all = buildDeadlines(records, now);
+  const dated = all.filter((item) => item.fullPaper !== null);
+  return {
+    records,
+    all,
+    dated,
+    live: dated.filter((item) => !item.isPast),
+    past: dated.filter((item) => item.isPast).reverse(),
+  };
+}
+

@@ -1,0 +1,18 @@
+/*
+ * 등급 배지 — 목록 카드·내 마감 카드·상세 시트가 함께 쓴다.
+ *
+ * 스코프 스타일에 둘 수 없다. 상세 시트는 같은 배지를 클라이언트에서
+ * 만들어 붙이므로 컴포넌트 스코프 밖에서도 같은 규칙이 걸려야 한다.
+ */
+.badge {
+  flex: none;
+  display: flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 7px;
+  border: 1px solid var(--ink3);
+  border-radius: 4px;
+  color: var(--ink2);
+  font: 500 11px/1 var(--sans);
+  white-space: nowrap;
+}

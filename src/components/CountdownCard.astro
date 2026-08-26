@@ -4,11 +4,11 @@
  * 내기로 정한 것이라 남은 시간을 초 단위까지 봐야 한다 (decisions.md B-10).
  */
 import type { Deadline } from '../lib/deadlines.ts';
-import { urgencyTier } from '../lib/deadlines.ts';
+import { urgencyTier } from '../lib/config.ts';
 import { googleEventUrl, icsSlug } from '../lib/ics.ts';
 import { editionTitle } from '../lib/title.ts';
 import { href } from '../lib/urls.ts';
-import { DAY_MS } from '../lib/config.ts';
+import { MS, splitRemaining } from '../lib/dates.ts';
 
 interface Props {
   item: Deadline;
@@ -27,17 +27,14 @@ const grade = item.conference.ranks.internal.grade;
 const icsPath = href(`ics/${icsSlug(item.key)}.ics`);
 const googleUrl = googleEventUrl(item);
 
-const remaining = Math.max(0, deadline.instant.getTime() - now.getTime());
-const days = Math.floor(remaining / 86_400_000);
-const hours = Math.floor((remaining % 86_400_000) / 3_600_000);
-const minutes = Math.floor((remaining % 3_600_000) / 60_000);
-const seconds = Math.floor((remaining % 60_000) / 1000);
+const remaining = deadline.instant.getTime() - now.getTime();
+const { days, hours, minutes, seconds } = splitRemaining(remaining);
 
 /*
  * 24시간이 경계다. 초는 항상 보이고, 하루가 남지 않았으면 '일'만 뺀다 —
  * 어차피 0이라 자리만 차지한다.
  */
-const lastDay = remaining < DAY_MS;
+const lastDay = remaining < MS.day;
 ---
 
 <article class="saved" data-key={item.key} data-countdown={deadline.instant.toISOString()}>
@@ -232,17 +229,6 @@ const lastDay = remaining < DAY_MS;
     flex-wrap: wrap;
   }
 
-  .badge {
-    display: flex;
-    align-items: center;
-    height: 20px;
-    padding: 0 7px;
-    border: 1px solid var(--ink3);
-    border-radius: 4px;
-    color: var(--ink2);
-    font: 500 11px/1 var(--sans);
-    white-space: nowrap;
-  }
 
   /* 남은 시간이 이 카드의 주인공이다. */
   .clock {

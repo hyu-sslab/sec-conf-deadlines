@@ -2,7 +2,7 @@
  * iCalendar 생성 (RFC 5545). 전체 피드와 마감별 파일이 같은 코드를 쓴다.
  */
 import type { Deadline } from './deadlines.ts';
-import { toIcsUtc } from './dates.ts';
+import { MS, toIcsUtc } from './dates.ts';
 import { editionTitle } from './title.ts';
 import { SITE_ID } from './config.ts';
 
@@ -118,7 +118,7 @@ export function calendar(events: string[], name: string): string {
  */
 export function googleEventUrl(item: Deadline): string {
   const start = item.fullPaper!.instant;
-  const end = new Date(start.getTime() + 30 * 60_000);
+  const end = new Date(start.getTime() + 30 * MS.minute);
   const params = new URLSearchParams({
     action: 'TEMPLATE',
     text: `${titleOf(item)} 마감`,

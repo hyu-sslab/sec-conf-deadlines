@@ -7,6 +7,14 @@ export const AOE = 'Etc/GMT+12';
 /** 화면에 쓰는 유일한 표시 기준 (decisions.md B-6). */
 export const KST = 'Asia/Seoul';
 
+/** 밀리초 단위. 시간 계산은 전부 이 값으로 한다 — 리터럴을 다시 쓰지 않는다. */
+export const MS = {
+  second: 1_000,
+  minute: 60_000,
+  hour: 3_600_000,
+  day: 86_400_000,
+} as const;
+
 export interface CalendarDate {
   year: number;
   month: number;
@@ -90,10 +98,16 @@ export function zonedTimeToInstant(wall: WallClock, timeZone: string): Date {
  * 시각이 없으면 그날 23:59로 본다 — 마감은 하루의 끝이지 시작이 아니다.
  */
 export function deadlineInstant(value: DateString, timeZone: string): Date {
-  const [datePart, timePart] = value.split(' ');
-  const [year, month, day] = datePart.split('-').map(Number);
+  const { year, month, day } = parseCalendarDate(value);
+  const timePart = value.split(' ')[1];
   const [hour, minute] = timePart ? timePart.split(':').map(Number) : [23, 59];
   return zonedTimeToInstant({ year, month, day, hour, minute, second: 0 }, timeZone);
+}
+
+/** `YYYY-MM-DD…` 의 날짜 부분. 타임존을 거치지 않으므로 시각은 보지 않는다. */
+export function parseCalendarDate(value: DateString): CalendarDate {
+  const [year, month, day] = value.split(' ')[0].split('-').map(Number);
+  return { year, month, day };
 }
 
 export function calendarDateIn(instant: Date, timeZone: string): CalendarDate {
@@ -117,12 +131,17 @@ export function monthKeyOf(date: CalendarDate): string {
 export function daysBetween(from: CalendarDate, to: CalendarDate): number {
   const a = Date.UTC(from.year, from.month - 1, from.day);
   const b = Date.UTC(to.year, to.month - 1, to.day);
-  return Math.round((b - a) / 86_400_000);
+  return Math.round((b - a) / MS.day);
 }
 
 /** 남은 날수. 라벨과 같은 타임존으로 세야 하루가 어긋나지 않는다. */
 export function dDay(instant: Date, now: Date, timeZone: string): number {
   return daysBetween(calendarDateIn(now, timeZone), calendarDateIn(instant, timeZone));
+}
+
+/** 그 날짜 이후 며칠 지났나. 확인일이 얼마나 묵었는지 재는 데 쓴다. */
+export function daysSince(value: DateString, now: Date, timeZone: string): number {
+  return daysBetween(parseCalendarDate(value), calendarDateIn(now, timeZone));
 }
 
 /** 마감 통과 여부는 달력이 아니라 절대 시각으로 본다. */
@@ -139,4 +158,22 @@ export function formatInZone(instant: Date, timeZone: string): string {
 /** `20260826T115900Z` — RFC 5545의 UTC 표기. */
 export function toIcsUtc(instant: Date): string {
   return `${instant.toISOString().replace(/[-:]/g, '').split('.')[0]}Z`;
+}
+
+export interface Remaining {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+}
+
+/** 남은 시간을 일·시간·분·초로 쪼갠다. 서버 렌더와 카운트다운이 함께 쓴다. */
+export function splitRemaining(ms: number): Remaining {
+  const left = Math.max(0, ms);
+  return {
+    days: Math.floor(left / MS.day),
+    hours: Math.floor((left % MS.day) / MS.hour),
+    minutes: Math.floor((left % MS.hour) / MS.minute),
+    seconds: Math.floor((left % MS.minute) / MS.second),
+  };
 }

@@ -3,12 +3,12 @@
  * 연간 개요 — 한 달씩 넘기는 달력 (decisions.md B-11).
  * 격자는 날짜의 위치와 밀도만, 이름은 아래 목록이 맡는다.
  */
-import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import AppBar from '../components/AppBar.astro';
 import TabBar from '../components/TabBar.astro';
 import { href } from '../lib/urls.ts';
 import { editionTitle } from '../lib/title.ts';
+import { loadTopics } from '../lib/topics.ts';
 import {
   buildDeadlines,
   compareByDeadline,
@@ -71,12 +71,11 @@ const months = groups.map((group) => {
   };
 });
 
-const topicEntries = await getCollection('topics');
-const shortLabel = new Map(topicEntries.map((entry) => [entry.id, entry.data.short]));
+const { options: topics } = await loadTopics();
+const shortLabel = new Map(topics.map((topic) => [topic.id, topic.short]));
 
 const jumpable = new Set(monthsInHorizon(now, 12));
 
-const titleOf = (d: Deadline) => editionTitle(d);
 ---
 
 <Base title="연간 개요 — Security & Software Engineering Conference Deadlines">
@@ -135,7 +134,7 @@ const titleOf = (d: Deadline) => editionTitle(d);
                   <span class="d">{String(item.fullPaper!.date.day).padStart(2, '0')}</span>
                   <span class="body">
                     <span class="top">
-                      <span class="name">{titleOf(item)}</span>
+                      <span class="name">{editionTitle(item)}</span>
                       {item.isEstimated && <span class="state">예상</span>}
                     </span>
                     <span class="field">

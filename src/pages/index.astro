@@ -3,7 +3,6 @@
  * 목록 — 기본 화면 (FR-016). 전체가 빌드 타임에 렌더링된다. JS가 꺼져 있어도
  * 목록·월 네비게이터·지난 마감 펼침이 동작한다 (NFR-009).
  */
-import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import AppBar from '../components/AppBar.astro';
 import MonthNav from '../components/MonthNav.astro';
@@ -16,45 +15,21 @@ import Toast from '../components/Toast.astro';
 import TabBar from '../components/TabBar.astro';
 import { DEFAULT_HORIZON_MONTHS } from '../lib/config.ts';
 import {
-  buildDeadlines,
   compareByDeadline,
-  estimateNextEdition,
   groupByMonth,
-  loadConferences,
+  loadPageDeadlines,
   monthsInHorizon,
+  projectedEditions,
   recommendFor,
   withinHorizon,
-  type Deadline,
 } from '../lib/deadlines.ts';
+import { loadTopics } from '../lib/topics.ts';
 
 const now = new Date();
-const records = await loadConferences();
-const all = buildDeadlines(records, now);
+const { records, all, live, past } = await loadPageDeadlines(now);
+const { options: topics, labelFor } = await loadTopics();
 
-const topicEntries = await getCollection('topics');
-const topicLabel = new Map(topicEntries.map((entry) => [entry.id, entry.data.label]));
-const labelFor = (item: Deadline) =>
-  item.conference.topics.map((topic) => topicLabel.get(topic) ?? topic).join(' · ');
-
-const dated = all.filter((item) => item.fullPaper !== null);
-const live = dated.filter((item) => !item.isPast);
-const past = dated.filter((item) => item.isPast).reverse();
-
-/**
- * FR-021 — 다음 에디션이 아직 등록되지 않은 학회는 전년도 패턴으로 추정해
- * 목록에 함께 올린다. 이게 없으면 CFP가 늦게 나오는 분야(AI 학회들이
- * 대표적이다)는 화면에서 통째로 사라진다.
- *
- * BR-004에 따라 추정값에는 카운트다운을 적용하지 않는다 — 카드에 D-day 대신
- * `예상` 라벨이 붙는다.
- */
-const liveIds = new Set(live.map((item) => item.conference.id));
-const projected = records
-  .filter((conference) => !liveIds.has(conference.id) && conference.editions.length > 0)
-  .map((conference) => estimateNextEdition(conference, now))
-  .filter(
-    (item): item is Deadline => item !== null && item.fullPaper !== null && !item.isPast,
-  );
+const projected = projectedEditions(records, live, now);
 
 const upcoming = [...live, ...projected].sort(compareByDeadline);
 
@@ -87,10 +62,6 @@ const firstNonEmpty = months.find((month) => month.inDefault && month.count > 0)
 const defaultCount = groups
   .filter((group) => defaultKeys.has(group.key))
   .reduce((sum, group) => sum + group.items.length, 0);
-
-const topics = topicEntries
-  .sort((a, b) => a.data.order - b.data.order)
-  .map((entry) => ({ id: entry.id, label: entry.data.label, short: entry.data.short }));
 
 ---
 
