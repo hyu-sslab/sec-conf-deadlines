@@ -4,6 +4,9 @@ name: deploy
 on:
   push:
     branches: [main]
+  # 빌드 시점이 기준인 값들(지난 마감 정리·월 그룹핑·추정 에디션)을 매일 새로 굽는다.
+  schedule:
+    - cron: "20 15 * * *"
   workflow_dispatch:
 
 permissions:
