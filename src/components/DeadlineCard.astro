@@ -5,7 +5,7 @@
  * 날짜는 전부 KST 기준이다 (B-6).
  */
 import type { Deadline } from '../lib/deadlines.ts';
-import { urgencyTier } from '../lib/deadlines.ts';
+import { ddayLabel, urgencyTier } from '../lib/config.ts';
 import { editionTitle } from '../lib/title.ts';
 
 interface Props {
@@ -22,6 +22,7 @@ const tier = item.dday === null ? 3 : urgencyTier(item.dday);
 
 const icore = item.conference.ranks.icore.rank;
 const grade = item.conference.ranks.internal.grade;
+
 const sciEquivalent = item.conference.ranks.bk21.sci_equivalent;
 
 /** 클라이언트 필터·상세 시트가 읽는 값. 별도 JSON을 내보내지 않기 위해
@@ -65,7 +66,7 @@ const CONFIDENCE_LABEL = {
         item.dday === null ? (
           <span class="estimated">예상</span>
         ) : (
-          <span class="dday" data-tier={tier}>D-{item.dday}</span>
+          <span class="dday" data-tier={tier}>{ddayLabel(item.dday)}</span>
         )
       }
 
@@ -244,18 +245,6 @@ const CONFIDENCE_LABEL = {
    * 외곽선형으로 형태를 갈랐지만, 라벨이 있으면 형태로 구분할 이유가 없다 —
    * 오히려 "A*"만 있으면 어느 체계의 A*인지 알 수 없었다.
    */
-  .badge {
-    flex: none;
-    display: flex;
-    align-items: center;
-    height: 20px;
-    padding: 0 7px;
-    border: 1px solid var(--ink3);
-    border-radius: 4px;
-    color: var(--ink2);
-    font: 500 11px/1 var(--sans);
-    white-space: nowrap;
-  }
 
 
   /* 우측 수치 축을 D-day와 공유한다. 32px이라 텍스트와 떨어져 오탭이 없다. */

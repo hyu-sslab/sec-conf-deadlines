@@ -4,7 +4,7 @@
  * 지금 열려 있는 마감을 준다 (FR-020~022). <details>라 JS 없이 동작한다.
  */
 import type { Deadline, Recommendation } from '../lib/deadlines.ts';
-import { urgencyTier, RELAXED_TIER } from '../lib/deadlines.ts';
+import { RELAXED_TIER, ddayLabel, urgencyTier } from '../lib/config.ts';
 import { editionTitle } from '../lib/title.ts';
 
 interface Props {
@@ -61,7 +61,7 @@ const { items: alts, sameField } = alternatives;
                 <span class="alt-name">{titleOf(alt)}</span>
                 <span class="alt-rank">{alt.conference.ranks.icore.rank ?? ''}</span>
                 <span class="alt-date">{alt.fullPaper!.date.month}/{alt.fullPaper!.date.day}</span>
-                <span class="alt-dday" data-tier={alt.dday === null ? RELAXED_TIER : urgencyTier(alt.dday)}>D-{alt.dday}</span>
+                <span class="alt-dday" data-tier={alt.dday === null ? RELAXED_TIER : urgencyTier(alt.dday)}>{alt.dday === null ? '예상' : ddayLabel(alt.dday)}</span>
               </li>
             ))}
           </ul>
