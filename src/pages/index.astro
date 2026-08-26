@@ -9,6 +9,7 @@ import MonthNav from '../components/MonthNav.astro';
 import FilterBar from '../components/FilterBar.astro';
 import DeadlineCard from '../components/DeadlineCard.astro';
 import PastCard from '../components/PastCard.astro';
+import Chevron from '../components/Chevron.astro';
 import DetailSheet from '../components/DetailSheet.astro';
 import FilterSheet from '../components/FilterSheet.astro';
 import Toast from '../components/Toast.astro';
@@ -96,7 +97,10 @@ const defaultCount = groups
     {
       past.length > 0 && (
         <details class="past">
-          <summary>지난 마감 {past.length}건</summary>
+          <summary>
+            <Chevron />
+            <span>지난 마감 {past.length}건</span>
+          </summary>
           <div class="past-list">
             {past.map((item) => (
               <PastCard item={item} recommendation={recommendFor(item, all, now)} />
@@ -185,15 +189,7 @@ const defaultCount = groups
     display: none;
   }
 
-  .past > summary::before {
-    content: '▸';
-    font-size: 9px;
-    color: var(--ink3);
-  }
 
-  .past[open] > summary::before {
-    content: '▾';
-  }
 
   .past-list {
     display: flex;

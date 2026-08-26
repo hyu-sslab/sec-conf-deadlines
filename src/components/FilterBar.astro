@@ -3,6 +3,8 @@
  * 필터 바. 기간 칩과 필터 버튼 둘만 상시 노출하고, 선택된 필터만 사이에
  * 칩으로 쌓인다. 고를 수 있는 항목을 전부 늘어놓으면 상태가 아니라 메뉴가 된다.
  */
+import Chevron from './Chevron.astro';
+
 interface Props {
   horizonMonths: number;
 }
@@ -13,7 +15,7 @@ const { horizonMonths } = Astro.props;
 <div class="bar">
   <button class="range" type="button" data-open-filters>
     <span data-range-label>{horizonMonths}개월</span>
-    <span class="caret" aria-hidden="true">▾</span>
+    <Chevron down />
   </button>
 
   <span class="divider" aria-hidden="true"></span>
@@ -65,10 +67,6 @@ const { horizonMonths } = Astro.props;
     cursor: pointer;
   }
 
-  .caret {
-    font-size: 9px;
-    color: var(--ink2);
-  }
 
   .divider {
     flex: none;

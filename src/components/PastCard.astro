@@ -6,6 +6,7 @@
 import type { Deadline, Recommendation } from '../lib/deadlines.ts';
 import { RELAXED_TIER, ddayLabel, urgencyTier } from '../lib/config.ts';
 import { editionTitle } from '../lib/title.ts';
+import Chevron from './Chevron.astro';
 
 interface Props {
   item: Deadline;
@@ -29,6 +30,7 @@ const { items: alts, sameField } = alternatives;
     </svg>
     <span class="name">{titleOf(item)}</span>
     <span class="closed">마감됨</span>
+    <Chevron />
   </summary>
 
   <div class="body">
@@ -105,16 +107,7 @@ const { items: alts, sameField } = alternatives;
     list-style: none;
   }
 
-  summary::after {
-    content: '▸';
-    flex: none;
-    font-size: 9px;
-    color: var(--ink3);
-  }
 
-  .past-item[open] summary::after {
-    content: '▾';
-  }
 
   summary::-webkit-details-marker {
     display: none;
