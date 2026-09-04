@@ -94,11 +94,11 @@ conferences:
           full_paper: null
           notification: null
           camera_ready: null
-        conference_date: null
+        conference_date: "2027-10-11 ~ 2027-10-15"
         place: "Atlanta, USA"
         note: "CCS 2027 페이지는 열렸으나 일정이 아직 없다 — \"Coming in October 2027\"과 개최지만 게시돼 있다."
         source_url: https://www.sigsac.org/ccs/CCS2027/
-        last_verified_at: "2026-08-23"
+        last_verified_at: "2026-09-04"
         confidence: auto
 
   - id: usenix-sec

@@ -140,3 +140,16 @@ conferences:
         source_url: https://cvpr.thecvf.com/Conferences/2026/Dates
         last_verified_at: "2026-08-23"
         confidence: auto
+      - year: 2027
+        cycle: 1
+        dates:
+          abstract: null
+          full_paper: null
+          notification: null
+          camera_ready: null
+        conference_date: "2027-06-20 ~ 2027-06-25"
+        place: "Seattle, WA, USA"
+        note: "개최 일정과 장소만 공개. Call for Papers는 \"This document is not yet available\"."
+        source_url: https://cvpr.thecvf.com/Conferences/2027
+        last_verified_at: "2026-09-04"
+        confidence: auto
