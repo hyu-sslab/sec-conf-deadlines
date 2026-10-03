@@ -30,7 +30,7 @@ conferences:
         place: "Baltimore, MD, USA"
         note: "Preliminary Call for Papers 단계다. 마감 시각이 AoE가 아니라 US EST 17:59(UTC 22:59)다."
         source_url: https://www.usenix.org/conference/osdi27/call-for-papers
-        last_verified_at: "2026-08-23"
+        last_verified_at: "2026-10-03"
         confidence: auto
 
   - id: sosp
@@ -99,6 +99,19 @@ conferences:
         source_url: https://www.usenix.org/conference/nsdi27/call-for-papers
         last_verified_at: "2026-08-23"
         confidence: auto
+      - year: 2028
+        cycle: 1
+        dates:
+          abstract: null
+          full_paper: null
+          notification: null
+          camera_ready: null
+        conference_date: "2028-05-09 ~ 2028-05-11"
+        place: "Santa Clara, CA, USA"
+        note: "CFP 미공개. 개최 일정·장소는 USENIX NSDI 목록 페이지 기준."
+        source_url: https://www.usenix.org/conferences/byname/178
+        last_verified_at: "2026-10-03"
+        confidence: auto
 
   - id: eurosys
     name: EuroSys
@@ -137,4 +150,33 @@ conferences:
         note: "Fall cycle. 리버탈 2027-01-08(단일 일자)."
         source_url: https://2027.eurosys.org/cfp.html
         last_verified_at: "2026-08-23"
+        confidence: auto
+
+  # 2026-10-03 편입(관리자 요청). 교내 B등급(1.1) + BK21plus SCI급이다.
+  # DAC의 ICORE는 CORE2023 'TBR'과 ICORE2026 A* 검색 결과가 엇갈려 비워 뒀다.
+  - id: dac
+    name: DAC
+    full_name: ACM/IEEE Design Automation Conference
+    link: https://dac.com/2027
+    dblp: https://dblp.org/db/conf/dac/index.html
+    topics: [hardware, systems]
+    type: conference
+    ranks:
+      icore: { rank: null, source: null }
+      internal: { grade: B, adjusted_if: 1.1, extra_index: 1.2, quality_index: 11, valid_year: 2025 }
+      bk21: { sci_equivalent: true, code: BKCS0040 }
+    editions:
+      - year: 2027
+        cycle: 1
+        dates:
+          abstract: "2026-11-11 17:00"
+          full_paper: "2026-11-18 17:00"
+          notification: "2027-03-08"
+          camera_ready: "2027-03-31"
+        timezone: America/Los_Angeles
+        conference_date: "2027-07-11 ~ 2027-07-14"
+        place: "San Jose, USA"
+        note: "Research Track 기준. 마감 '5 PM PST'. 2027-02-22 채택 논문 ID 공개, 2027-03-22 Manuscript Confirmation 마감. 리버탈 일정 없음. 개최일·장소는 dac.com/2027 홈."
+        source_url: https://dac.com/2027/program/research-manuscript-submissions
+        last_verified_at: "2026-10-03"
         confidence: auto

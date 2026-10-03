@@ -19,14 +19,14 @@ conferences:
       - year: 2027
         cycle: 1
         dates:
-          abstract: "2026-10-11 23:59"
-          full_paper: "2026-10-18 23:59"
-          rebuttal: ["2026-12-12", "2026-12-19"]
-          notification: "2026-12-10"
+          abstract: "2026-10-18 23:59"
+          full_paper: "2026-10-25 23:59"
+          rebuttal: ["2026-12-15", "2026-12-20"]
+          notification: "2027-01-04"
           camera_ready: "2027-01-31"
         conference_date: "2027-05-10 ~ 2027-05-14"
         place: "Dublin, Ireland"
-        note: "원문이 통보(12-10)를 리버탈(12-12~19)보다 앞에 적어 순서가 어긋난다. 12-10은 리뷰 공개일이고 최종 결정은 더 늦을 가능성이 있다. 재확인 필요."
+        note: "2026-10-03 확인: 마감 1주 연기(초록 10-11→10-18, 본문 10-18→10-25). 리뷰 공개(Result Release) 2026-12-15, 최종 통보 2027-01-04로 리버탈 이후가 되어 순서 문제가 해소됐다. 개최 일정은 이번에 재확인하지 못했다."
         source_url: https://acmweb2027.org/important-dates/
-        last_verified_at: "2026-08-23"
+        last_verified_at: "2026-10-03"
         confidence: auto

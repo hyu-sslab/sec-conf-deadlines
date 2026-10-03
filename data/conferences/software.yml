@@ -55,7 +55,7 @@ conferences:
         place: "Shenzhen, China"
         note: "대수정 재제출 2027-03-05. 연구 트랙 상세 페이지는 로그인이 걸려 있어 메인 일정표에서 읽었다."
         source_url: https://conf.researchr.org/home/fse-2027
-        last_verified_at: "2026-08-23"
+        last_verified_at: "2026-10-03"
         confidence: auto
 
   - id: pldi
@@ -94,8 +94,8 @@ conferences:
         conference_date: "2027-06-05 ~ 2027-06-11"
         place: "Atlanta, GA, USA"
         note: "수정 마감 2027-03-23, 최종 통보 2027-04-01. 사이트에 타임존 표기가 없어 AoE로 가정했다."
-        source_url: https://pldi27.sigplan.org/
-        last_verified_at: "2026-08-23"
+        source_url: https://pldi27.sigplan.org/track/pldi-2027-papers
+        last_verified_at: "2026-10-03"
         confidence: auto
 
   - id: popl
