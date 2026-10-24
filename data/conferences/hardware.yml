@@ -28,10 +28,10 @@ conferences:
           camera_ready: null
         conference_date: "2026-06-27 ~ 2026-07-01"
         place: "Raleigh, NC, USA"
-        note: "ISCA 2027(Atlanta, 2027-06-05~09)은 CFP 미공개. 카메라레디 일자는 CFP에 없다."
+        note: "Main track 기준. Industry track은 초록 2025-12-05, 본문 2025-12-12, rebuttal 2026-02-16~27(revision 없음), 통보 동일(2026-03-27). 카메라레디 일자는 CFP에 없다."
         source_url: https://iscaconf.org/isca2026/submit/callforpapers.php
-        last_verified_at: "2026-08-23"
-        confidence: auto
+        last_verified_at: "2026-10-24"
+        confidence: verified
       - year: 2027
         cycle: 1
         dates:
