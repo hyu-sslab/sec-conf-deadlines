@@ -71,8 +71,8 @@ conferences:
         place: "The Hague, The Netherlands"
         note: "Abstract 등록은 필수다. Early-reject 통보 2026-02-20."
         source_url: https://www.sigsac.org/ccs/CCS2026/call-for/call-for-papers.html
-        last_verified_at: "2026-08-23"
-        confidence: auto
+        last_verified_at: "2026-10-24"
+        confidence: verified
       - year: 2026
         cycle: 2
         dates:
@@ -83,10 +83,10 @@ conferences:
           camera_ready: "2026-09-13"
         conference_date: "2026-11-15 ~ 2026-11-19"
         place: "The Hague, The Netherlands"
-        note: "Artifact 업로드 2026-05-02. CCS 2027(Atlanta, 2027-10)은 CFP 미공개."
+        note: "Artifact 업로드 2026-05-02. Early-reject 통보 2026-06-12(06-03→06-10→06-12로 두 차례 연기). CCS 2027(Atlanta, 2027-10)은 CFP 미공개."
         source_url: https://www.sigsac.org/ccs/CCS2026/call-for/call-for-papers.html
-        last_verified_at: "2026-08-23"
-        confidence: auto
+        last_verified_at: "2026-10-24"
+        confidence: verified
       - year: 2027
         cycle: 1
         dates:
