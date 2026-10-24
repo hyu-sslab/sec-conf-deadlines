@@ -32,6 +32,20 @@ conferences:
         source_url: https://iscaconf.org/isca2026/submit/callforpapers.php
         last_verified_at: "2026-08-23"
         confidence: auto
+      - year: 2027
+        cycle: 1
+        dates:
+          abstract: "2026-11-09 23:59"
+          full_paper: "2026-11-16 23:59"
+          rebuttal: ["2027-02-16", "2027-03-08"]
+          notification: "2027-03-26"
+          camera_ready: null
+        conference_date: "2027-06-05 ~ 2027-06-09"
+        place: "Atlanta, USA"
+        note: "Main track 기준. FCRC 공동 개최. 1라운드 리뷰 후 통과 논문만 rebuttal/revision 기간에 들어간다. Industry track은 초록 2026-12-06, 본문 2026-12-13, 통보 동일(2027-03-26). 카메라레디 일자는 CFP에 없다."
+        source_url: https://iscaconf.org/isca2027/submit/callforpapers.php
+        last_verified_at: "2026-10-24"
+        confidence: auto
 
   - id: micro
     name: MICRO

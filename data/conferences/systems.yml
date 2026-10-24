@@ -58,6 +58,19 @@ conferences:
         source_url: https://sigops.org/s/conferences/sosp/2026/cfp.html
         last_verified_at: "2026-08-23"
         confidence: auto
+      - year: 2027
+        cycle: 1
+        dates:
+          abstract: null
+          full_paper: null
+          notification: null
+          camera_ready: null
+        conference_date: "2027-11-30 ~ 2027-12-03"
+        place: "Vancouver, BC, Canada"
+        note: "sosp.org 목록에 33회(2027) 일정·장소만 게시돼 있다. CFP 미공개."
+        source_url: https://sosp.org/
+        last_verified_at: "2026-10-24"
+        confidence: auto
 
   - id: nsdi
     name: NSDI
@@ -110,7 +123,7 @@ conferences:
         place: "Santa Clara, CA, USA"
         note: "CFP 미공개. 개최 일정·장소는 USENIX NSDI 목록 페이지 기준."
         source_url: https://www.usenix.org/conferences/byname/178
-        last_verified_at: "2026-10-03"
+        last_verified_at: "2026-10-24"
         confidence: auto
 
   - id: eurosys

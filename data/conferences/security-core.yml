@@ -98,7 +98,7 @@ conferences:
         place: "Atlanta, USA"
         note: "CCS 2027 페이지는 열렸으나 일정이 아직 없다 — \"Coming in October 2027\"과 개최지만 게시돼 있다."
         source_url: https://www.sigsac.org/ccs/CCS2027/
-        last_verified_at: "2026-10-03"
+        last_verified_at: "2026-10-24"
         confidence: auto
 
   - id: usenix-sec
