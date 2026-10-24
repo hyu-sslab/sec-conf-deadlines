@@ -232,8 +232,8 @@ conferences:
         place: "Rome, Italy"
         note: "Winter cycle. 대면 개최만 진행한다. 종료일은 CFP에 없다."
         source_url: https://sites.google.com/di.uniroma1.it/esorics2026/call-for/papers
-        last_verified_at: "2026-08-23"
-        confidence: auto
+        last_verified_at: "2026-10-24"
+        confidence: verified
       - year: 2026
         cycle: 2
         dates:
@@ -245,8 +245,8 @@ conferences:
         place: "Rome, Italy"
         note: "Spring cycle. ESORICS 2027은 CFP 미공개."
         source_url: https://sites.google.com/di.uniroma1.it/esorics2026/call-for/papers
-        last_verified_at: "2026-08-23"
-        confidence: auto
+        last_verified_at: "2026-10-24"
+        confidence: verified
       - year: 2027
         cycle: 1
         dates:
