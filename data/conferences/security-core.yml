@@ -71,8 +71,8 @@ conferences:
         place: "The Hague, The Netherlands"
         note: "Abstract 등록은 필수다. Early-reject 통보 2026-02-20."
         source_url: https://www.sigsac.org/ccs/CCS2026/call-for/call-for-papers.html
-        last_verified_at: "2026-08-23"
-        confidence: auto
+        last_verified_at: "2026-10-24"
+        confidence: verified
       - year: 2026
         cycle: 2
         dates:
@@ -83,10 +83,10 @@ conferences:
           camera_ready: "2026-09-13"
         conference_date: "2026-11-15 ~ 2026-11-19"
         place: "The Hague, The Netherlands"
-        note: "Artifact 업로드 2026-05-02. CCS 2027(Atlanta, 2027-10)은 CFP 미공개."
+        note: "Artifact 업로드 2026-05-02. Early-reject 통보 2026-06-12(06-03→06-10→06-12로 두 차례 연기). CCS 2027(Atlanta, 2027-10)은 CFP 미공개."
         source_url: https://www.sigsac.org/ccs/CCS2026/call-for/call-for-papers.html
-        last_verified_at: "2026-08-23"
-        confidence: auto
+        last_verified_at: "2026-10-24"
+        confidence: verified
       - year: 2027
         cycle: 1
         dates:
@@ -98,7 +98,7 @@ conferences:
         place: "Atlanta, USA"
         note: "CCS 2027 페이지는 열렸으나 일정이 아직 없다 — \"Coming in October 2027\"과 개최지만 게시돼 있다."
         source_url: https://www.sigsac.org/ccs/CCS2027/
-        last_verified_at: "2026-10-03"
+        last_verified_at: "2026-10-24"
         confidence: auto
 
   - id: usenix-sec
@@ -232,8 +232,8 @@ conferences:
         place: "Rome, Italy"
         note: "Winter cycle. 대면 개최만 진행한다. 종료일은 CFP에 없다."
         source_url: https://sites.google.com/di.uniroma1.it/esorics2026/call-for/papers
-        last_verified_at: "2026-08-23"
-        confidence: auto
+        last_verified_at: "2026-10-24"
+        confidence: verified
       - year: 2026
         cycle: 2
         dates:
@@ -245,7 +245,20 @@ conferences:
         place: "Rome, Italy"
         note: "Spring cycle. ESORICS 2027은 CFP 미공개."
         source_url: https://sites.google.com/di.uniroma1.it/esorics2026/call-for/papers
-        last_verified_at: "2026-08-23"
+        last_verified_at: "2026-10-24"
+        confidence: verified
+      - year: 2027
+        cycle: 1
+        dates:
+          abstract: null
+          full_paper: null
+          notification: null
+          camera_ready: null
+        conference_date: "2027-09-13 ~ 2027-09-17"
+        place: "Vienna, Austria"
+        note: "ESORICS 2027 사이트는 열렸으나 CFP가 없다. 본 학회 2027-09-13~15, 워크숍 2027-09-16~17 (University of Vienna)."
+        source_url: https://www.esorics2027.org/
+        last_verified_at: "2026-10-24"
         confidence: auto
 
   - id: raid

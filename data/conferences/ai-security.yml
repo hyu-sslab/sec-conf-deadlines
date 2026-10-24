@@ -233,10 +233,10 @@ conferences:
           notification: null
           camera_ready: null
         conference_date: null
-        place: null
-        note: ""
+        place: "Hong Kong"
+        note: "ICCV 2027 페이지는 열렸으나 Dates·CFP가 없다. 개최 일자는 페이지 안에서 'October 3–7, 2027'(헤더)과 'October 2–8, 2027'(Venue)로 어긋나 비워 두었다. 장소는 Hong Kong Convention and Expo Center."
         source_url: https://iccv.thecvf.com/Conferences/2027
-        last_verified_at: "2026-10-03"
+        last_verified_at: "2026-10-24"
         confidence: auto
 
   - id: eccv
@@ -300,8 +300,8 @@ conferences:
           notification: null
           camera_ready: null
         conference_date: null
-        place: null
-        note: ""
+        place: "San Jose, USA"
+        note: "2차 사이클 CFP 미공개. 1차 CFP는 2차 마감을 'the February 2027 deadline'으로만 언급하고 정확한 날짜를 적지 않았다."
         source_url: https://kdd2027.kdd.org/research-track-call-for-papers/
-        last_verified_at: "2026-10-03"
+        last_verified_at: "2026-10-24"
         confidence: auto
