@@ -68,7 +68,7 @@ conferences:
         place: "Milan, Italy"
         note: "FSE 공식 사이트 Upcoming Events에 개최지만 게시돼 있다. 일자·CFP 미공개."
         source_url: https://www.esec-fse.org/upcoming_events
-        last_verified_at: "2026-10-24"
+        last_verified_at: "2026-11-06"
         confidence: auto
 
   - id: pldi
@@ -108,7 +108,7 @@ conferences:
         place: "Atlanta, GA, USA"
         note: "수정 마감 2027-03-23, 최종 통보 2027-04-01. 사이트에 타임존 표기가 없어 AoE로 가정했다."
         source_url: https://pldi27.sigplan.org/track/pldi-2027-papers
-        last_verified_at: "2026-10-03"
+        last_verified_at: "2026-11-06"
         confidence: auto
 
   - id: popl
