@@ -13,7 +13,7 @@ conferences:
     type: conference
     ranks:
       icore: { rank: "A*", source: CORE2023 }
-      internal: { grade: A, adjusted_if: 1.3, extra_index: 1.6, quality_index: 11, valid_year: 2025 }
+      internal: { grade: A, adjusted_if: 1.3, extra_index: 1.2, quality_index: 11, valid_year: 2025 }
       bk21: { sci_equivalent: true, code: BKCS0018 }
     editions:
       - year: 2027
@@ -40,7 +40,7 @@ conferences:
     type: conference
     ranks:
       icore: { rank: "A*", source: CORE2023 }
-      internal: { grade: A, adjusted_if: 1.3, extra_index: 1.6, quality_index: 11, valid_year: 2025 }
+      internal: { grade: A, adjusted_if: 1.3, extra_index: 1.2, quality_index: 11, valid_year: 2025 }
       bk21: { sci_equivalent: true, code: BKCS0005 }
     editions:
       - year: 2027
@@ -80,7 +80,7 @@ conferences:
     type: conference
     ranks:
       icore: { rank: "A*", source: CORE2023 }
-      internal: { grade: A, adjusted_if: 1.3, extra_index: 1.6, quality_index: 11, valid_year: 2025 }
+      internal: { grade: A, adjusted_if: 1.3, extra_index: 1.2, quality_index: 11, valid_year: 2025 }
       bk21: { sci_equivalent: true, code: BKCS0021 }
     editions:
       - year: 2026
@@ -120,7 +120,7 @@ conferences:
     type: conference
     ranks:
       icore: { rank: "A*", source: CORE2023 }
-      internal: { grade: A, adjusted_if: 1.3, extra_index: 1.6, quality_index: 11, valid_year: 2025 }
+      internal: { grade: A, adjusted_if: 1.3, extra_index: 1.2, quality_index: 11, valid_year: 2025 }
       bk21: { sci_equivalent: true, code: BKCS0022 }
     editions:
       - year: 2027
@@ -173,7 +173,7 @@ conferences:
     type: conference
     ranks:
       icore: { rank: null, source: null }
-      internal: { grade: A, adjusted_if: 1.3, extra_index: 1.6, quality_index: 11, valid_year: 2025 }
+      internal: { grade: A, adjusted_if: 1.3, extra_index: 1.2, quality_index: 11, valid_year: 2025 }
       bk21: { sci_equivalent: false, code: null }
     editions:
       - year: 2027
