@@ -199,7 +199,7 @@ conferences:
     topics: [systems]
     type: conference
     ranks:
-      icore: { rank: null, source: null }
+      icore: { rank: A, source: ICORE2026 }
       internal: { grade: A, adjusted_if: 1.3, extra_index: 1.2, quality_index: 11, valid_year: 2025 }
       bk21: { sci_equivalent: false, code: null }
     editions:
