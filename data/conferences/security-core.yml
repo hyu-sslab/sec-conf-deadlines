@@ -286,3 +286,44 @@ conferences:
         source_url: https://raid2026.org/call.html
         last_verified_at: "2026-08-23"
         confidence: auto
+
+  - id: asiaccs
+    name: ASIA CCS
+    full_name: ACM ASIA Conference on Computer and Communications Security
+    link: https://asiaccs2027.cityu.edu.mo/
+    dblp: https://dblp.org/db/conf/asiaccs/index.html
+    topics: [systems, network]
+    type: conference
+    ranks:
+      icore: { rank: null, source: null }
+      internal: { grade: D, adjusted_if: 0.3, extra_index: 1.0, quality_index: 4, valid_year: 2025 }
+      bk21: { sci_equivalent: false, code: null }
+    editions:
+      - year: 2027
+        cycle: 1
+        dates:
+          abstract: null
+          full_paper: "2026-08-21"
+          rebuttal: ["2026-10-26", "2026-10-30"]
+          notification: "2026-11-13"
+          camera_ready: "2026-12-11"
+        conference_date: "2027-07-12 ~ 2027-07-16"
+        place: "Macau"
+        note: "1st round. Early rejection 2026-09-25, shepherded approval 2026-12-04. 수집 시점에 이미 지난 라운드다."
+        source_url: https://asiaccs2027.cityu.edu.mo/call-for-papers/index.html
+        last_verified_at: "2026-11-19"
+        confidence: auto
+      - year: 2027
+        cycle: 2
+        dates:
+          abstract: null
+          full_paper: "2026-12-11"
+          rebuttal: ["2027-03-08", "2027-03-12"]
+          notification: "2027-03-31"
+          camera_ready: "2027-05-07"
+        conference_date: "2027-07-12 ~ 2027-07-16"
+        place: "Macau"
+        note: "2nd round. Early rejection 2027-02-05, 1차 라운드 major revision 마감 2027-02-12, shepherded approval 2027-04-21."
+        source_url: https://asiaccs2027.cityu.edu.mo/call-for-papers/index.html
+        last_verified_at: "2026-11-19"
+        confidence: auto
