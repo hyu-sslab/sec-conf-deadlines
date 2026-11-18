@@ -30,6 +30,19 @@ conferences:
         source_url: https://conf.researchr.org/track/icse-2027/icse-2027-research-track
         last_verified_at: "2026-08-23"
         confidence: auto
+      - year: 2028
+        cycle: 1
+        dates:
+          abstract: null
+          full_paper: null
+          notification: null
+          camera_ready: null
+        conference_date: "2028-04-29 ~ 2028-05-07"
+        place: "Waikoloa, Hawaii, USA"
+        note: "50회. 본 학회 2028-05-03~05 (행사 전체 04-29~05-07), Hilton Waikoloa Village. Research track CFP·마감 미공개."
+        source_url: https://conf.researchr.org/home/icse-2028
+        last_verified_at: "2026-11-19"
+        confidence: auto
 
   - id: fse
     name: FSE
@@ -68,7 +81,7 @@ conferences:
         place: "Milan, Italy"
         note: "FSE 공식 사이트 Upcoming Events에 개최지만 게시돼 있다. 일자·CFP 미공개."
         source_url: https://www.esec-fse.org/upcoming_events
-        last_verified_at: "2026-11-06"
+        last_verified_at: "2026-11-19"
         confidence: auto
 
   - id: pldi
@@ -162,6 +175,20 @@ conferences:
         note: "연구 트랙 상세 페이지가 404다. 통보일 미수집."
         source_url: https://conf.researchr.org/home/ase-2026
         last_verified_at: "2026-08-23"
+        confidence: auto
+      - year: 2027
+        cycle: 1
+        dates:
+          abstract: null
+          full_paper: "2027-03-10"
+          rebuttal: ["2027-05-12", "2027-05-17"]
+          notification: "2027-06-08"
+          camera_ready: "2027-08-11"
+        conference_date: "2027-10-24 ~ 2027-10-28"
+        place: "El Paso, Texas, USA"
+        note: "예비 일정(Preliminary dates) — 정식 CFP는 곧 공개된다고 했다. Early rejection 2027-05-12, major revision 제출 2027-07-08, 최종 통보 2027-07-27."
+        source_url: https://conf.researchr.org/track/ase-2027/ase-2027-research-track
+        last_verified_at: "2026-11-19"
         confidence: auto
 
   - id: oopsla
