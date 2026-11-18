@@ -62,15 +62,15 @@ conferences:
       - year: 2027
         cycle: 1
         dates:
-          abstract: null
-          full_paper: null
-          notification: null
+          abstract: "2027-01-14 23:59"
+          full_paper: "2027-01-22 23:59"
+          notification: "2027-05-03"
           camera_ready: null
         conference_date: "2027-07-31 ~ 2027-08-06"
-        place: null
+        place: "Rio de Janeiro, Brazil"
         note: "Dates 페이지에 개최 일정만 있다(Expo 7/31, Tutorials 8/1, 본 학회 8/2~4, Workshops 8/5~6). CFP는 'will be posted here soon'. 개최 도시 미기재."
-        source_url: https://icml.cc/Conferences/2027/Dates
-        last_verified_at: "2026-11-06"
+        source_url: https://icml.cc/Conferences/2027/CallForPapers
+        last_verified_at: "2026-11-19"
         confidence: auto
 
   - id: aaai
@@ -178,7 +178,7 @@ conferences:
         place: "Seattle, WA, USA"
         note: "개최 일정과 장소만 공개. Call for Papers는 \"This document is not yet available\"."
         source_url: https://cvpr.thecvf.com/Conferences/2027/CallForPapers
-        last_verified_at: "2026-11-06"
+        last_verified_at: "2026-11-19"
         confidence: auto
 
   # 2026-10-03 편입. 기준: ICORE A* + CFP에 보안 관련 제출 영역 + 최근 보안 논문
@@ -249,7 +249,7 @@ conferences:
         place: "Hong Kong"
         note: "ICCV 2027 페이지는 열렸으나 Dates·CFP가 없다. 개최 일자는 페이지 안에서 'October 3–7, 2027'(헤더)과 'October 2–8, 2027'(Venue)로 어긋나 비워 두었다. 장소는 Hong Kong Convention and Expo Center."
         source_url: https://iccv.thecvf.com/Conferences/2027/Dates
-        last_verified_at: "2026-11-06"
+        last_verified_at: "2026-11-19"
         confidence: auto
 
   - id: eccv
@@ -316,5 +316,5 @@ conferences:
         place: "San Jose, USA"
         note: "2차 사이클 CFP 미공개. 1차 CFP는 2차 마감을 'the February 2027 deadline'으로만 언급하고 정확한 날짜를 적지 않았다."
         source_url: https://kdd2027.kdd.org/research-track-call-for-papers/
-        last_verified_at: "2026-11-06"
+        last_verified_at: "2026-11-19"
         confidence: auto

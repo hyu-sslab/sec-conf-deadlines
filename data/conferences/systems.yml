@@ -69,7 +69,7 @@ conferences:
         place: "Vancouver, BC, Canada"
         note: "sosp.org 목록에 33회(2027) 일정·장소만 게시돼 있다. CFP 미공개."
         source_url: https://sosp.org/
-        last_verified_at: "2026-11-06"
+        last_verified_at: "2026-11-19"
         confidence: auto
 
   - id: nsdi
@@ -123,7 +123,7 @@ conferences:
         place: "Santa Clara, CA, USA"
         note: "CFP 미공개. 개최 일정·장소는 USENIX NSDI 목록 페이지 기준."
         source_url: https://www.usenix.org/conferences/byname/178
-        last_verified_at: "2026-11-06"
+        last_verified_at: "2026-11-19"
         confidence: auto
 
   - id: eurosys
@@ -191,5 +191,5 @@ conferences:
         place: "San Jose, USA"
         note: "Research Track 기준. 마감 '5 PM PST'. 2027-02-22 채택 논문 ID 공개, 2027-03-22 Manuscript Confirmation 마감. 리버탈 일정 없음. 개최일·장소는 dac.com/2027 홈."
         source_url: https://dac.com/2027/program/research-manuscript-submissions
-        last_verified_at: "2026-11-06"
+        last_verified_at: "2026-11-19"
         confidence: auto
