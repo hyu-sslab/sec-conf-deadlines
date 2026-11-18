@@ -163,3 +163,44 @@ conferences:
         source_url: https://conf.researchr.org/home/ase-2026
         last_verified_at: "2026-08-23"
         confidence: auto
+
+  - id: oopsla
+    name: OOPSLA
+    full_name: Object-Oriented Programming, Systems, Languages & Applications
+    link: https://2027.splashcon.org/track/splashoopsla2027
+    dblp: https://dblp.org/db/conf/oopsla/index.html
+    topics: [systems]
+    type: conference
+    ranks:
+      icore: { rank: null, source: null }
+      internal: { grade: A, adjusted_if: 1.3, extra_index: 1.6, quality_index: 11, valid_year: 2025 }
+      bk21: { sci_equivalent: false, code: null }
+    editions:
+      - year: 2027
+        cycle: 1
+        dates:
+          abstract: null
+          full_paper: "2026-10-14"
+          rebuttal: ["2026-12-01", "2026-12-05"]
+          notification: "2026-12-18"
+          camera_ready: "2027-03-05"
+        conference_date: "2027-10-10 ~ 2027-10-15"
+        place: "Prague, Czechia"
+        note: "Round 1. 1차 통보 후 수정 제출 2027-01-22, 최종 통보 2027-02-12. SPLASH 2027과 공동 개최. 수집 시점에 이미 지난 라운드다."
+        source_url: https://2027.splashcon.org/track/splashoopsla2027
+        last_verified_at: "2026-11-19"
+        confidence: auto
+      - year: 2027
+        cycle: 2
+        dates:
+          abstract: null
+          full_paper: "2027-04-07"
+          rebuttal: ["2027-06-15", "2027-06-19"]
+          notification: "2027-07-02"
+          camera_ready: "2027-08-27"
+        conference_date: "2027-10-10 ~ 2027-10-15"
+        place: "Prague, Czechia"
+        note: "Round 2. 1차 통보 후 수정 제출 2027-07-30, 최종 통보 2027-08-13. Round 1에서 거절된 논문은 Round 2에 다시 낼 수 없다."
+        source_url: https://2027.splashcon.org/track/splashoopsla2027
+        last_verified_at: "2026-11-19"
+        confidence: auto
