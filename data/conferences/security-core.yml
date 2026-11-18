@@ -295,7 +295,7 @@ conferences:
     topics: [systems, network]
     type: conference
     ranks:
-      icore: { rank: null, source: null }
+      icore: { rank: A, source: ICORE2026 }
       internal: { grade: D, adjusted_if: 0.3, extra_index: 1.0, quality_index: 4, valid_year: 2025 }
       bk21: { sci_equivalent: false, code: null }
     editions:
