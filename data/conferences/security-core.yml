@@ -44,7 +44,7 @@ conferences:
         place: "Montreal, Canada"
         note: "Second cycle. Early-reject 통보 2027-01-18, shepherd 제출 2027-03-26."
         source_url: https://sp2027.ieee-security.org/cfpapers.html
-        last_verified_at: "2026-10-03"
+        last_verified_at: "2026-11-06"
         confidence: auto
 
   - id: ccs
@@ -98,7 +98,7 @@ conferences:
         place: "Atlanta, USA"
         note: "CCS 2027 페이지는 열렸으나 일정이 아직 없다 — \"Coming in October 2027\"과 개최지만 게시돼 있다."
         source_url: https://www.sigsac.org/ccs/CCS2027/
-        last_verified_at: "2026-10-24"
+        last_verified_at: "2026-11-06"
         confidence: auto
 
   - id: usenix-sec
@@ -139,7 +139,7 @@ conferences:
         place: "Denver, CO, USA"
         note: "Cycle 2. 등록 마감 2027-01-19. 원문 대조 불가(403)."
         source_url: https://www.usenix.org/conference/usenixsecurity27/call-for-papers
-        last_verified_at: "2026-10-03"
+        last_verified_at: "2026-11-06"
         confidence: auto
 
   - id: ndss
@@ -258,7 +258,7 @@ conferences:
         place: "Vienna, Austria"
         note: "ESORICS 2027 사이트는 열렸으나 CFP가 없다. 본 학회 2027-09-13~15, 워크숍 2027-09-16~17 (University of Vienna)."
         source_url: https://www.esorics2027.org/
-        last_verified_at: "2026-10-24"
+        last_verified_at: "2026-11-06"
         confidence: auto
 
   - id: raid
